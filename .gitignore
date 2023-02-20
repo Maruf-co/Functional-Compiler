@@ -1,0 +1,9 @@
+# Compiled files
+*.class 
+
+# Generated files
+# src/lex/Lexer.*
+
+# Input/test files
+*\~
+*.txt
