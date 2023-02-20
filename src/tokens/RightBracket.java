@@ -5,4 +5,11 @@ public class RightBracket extends Token {
     public String getName() {
         return "RBRK";
     }
+
+    public RightBracket() {
+    }
+
+    public RightBracket(String rawString) {
+        super(rawString);
+    }
 }
