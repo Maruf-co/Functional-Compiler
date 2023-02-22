@@ -29,7 +29,8 @@ import java.util.ArrayList;
 Identifier = [:jletter:][:jletterdigit:]*   // Variable/predefined function
 EOLN = \r|\n|\r\n                           // End of line
 Whitespace = {EOLN} | [ \t\f]               // Any space
-Number = (\+|\-)?\d+(\.\d*)?                // Number literal
+Borders = "(" | ")"
+Number = (\+|\-)?\d*(\.?\d+)    // Number literal
 
 // Captures contents enclosed into string in ""
 %state STRING   
@@ -37,25 +38,23 @@ Number = (\+|\-)?\d+(\.\d*)?                // Number literal
 %%
 
 <YYINITIAL> { 
-    {Identifier}     { return capture(new Identifier(yytext())); }
-    "("     { return capture(new LeftBracket()); }
-    ")"     { return capture(new RightBracket()); }
-    {Number}         { return capture(new Literal(yytext())); }
-    \" { stringLiteralBuffer.setLength(0); yybegin(STRING); }
-    {Whitespace}     { /* Skip */ }
+    "("                                         { return capture(new LeftBracket()); }
+    ")"                                         { return capture(new RightBracket()); }
+    ({Whitespace}|{Borders})\"                  { stringLiteralBuffer.setLength(0); yybegin(STRING); }
+    {Whitespace}                                { /* Skip */ }
+    ({Whitespace}|{Bord`ers}){Number}            { return capture(new Literal(yytext().trim())); }
+    {Identifier}                                { return capture(new Identifier(yytext())); }
 }
 
 <STRING> {
-    \"      { yybegin(YYINITIAL); return capture(new Literal(stringLiteralBuffer.toString())); }
-    \\t     { stringLiteralBuffer.append('\t'); }
-    \\n     { stringLiteralBuffer.append('\n'); }
-    \\r     { stringLiteralBuffer.append('\r'); }
-    \\\"    { stringLiteralBuffer.append('"');  }
-    \\      { stringLiteralBuffer.append('\\'); }
-    [^\n\r\"\\]+     { stringLiteralBuffer.append(yytext()); }
+    \"                  { yybegin(YYINITIAL); return capture(new Literal(stringLiteralBuffer.toString())); }
+    \\t                 { stringLiteralBuffer.append('\t'); }
+    \\n                 { stringLiteralBuffer.append('\n'); }
+    \\r                 { stringLiteralBuffer.append('\r'); }
+    \\\"                { stringLiteralBuffer.append('"');  }
+    \\                  { stringLiteralBuffer.append('\\'); }
+    [^\n\r\"\\]+        { stringLiteralBuffer.append(yytext()); }
 }
-
-
 
 [^]     { throw new Error("Unexpected character <"+yytext()+">"); }
 
