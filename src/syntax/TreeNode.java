@@ -6,9 +6,9 @@ import java.util.List;
 
 public class TreeNode<T>{
 
-    T data;
-    TreeNode<T> parent;
-    List<TreeNode<T>> children;
+    public T data;
+    public TreeNode<T> parent;
+    public List<TreeNode<T>> children;
 
     public TreeNode(T data) {
         this.data = data;

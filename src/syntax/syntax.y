@@ -13,7 +13,7 @@
 }
 
 %code {
-  static TreeNode node;
+  public static TreeNode node;
 
   public static void main(String args[]) throws IOException {
     LISPLexer lexer = new LISPLexer(new FileReader("input.txt"));
