@@ -40,17 +40,17 @@
 import java.text.MessageFormat;
 import java.util.ArrayList;
 /* "%code imports" blocks.  */
-/* "syntax.y":9  */
+/* "src/syntax/syntax.y":9  */
 
   import java.io.InputStream;
   import java.io.InputStreamReader;
   import java.io.Reader;
   import java.io.IOException;
 
-/* "LISPParser.java":51  */
+/* "syntax.java":51  */
 
 /**
- * A Bison parser, automatically generated from <tt>syntax.y</tt>.
+ * A Bison parser, automatically generated from <tt>src/syntax/syntax.y</tt>.
  *
  * @author LALR (1) parser skeleton written by Paolo Bonzini.
  */
@@ -403,62 +403,62 @@ public class LISPParser
       {
           case 2: /* Program: Elements  */
   if (yyn == 2)
-    /* "syntax.y":36  */
+    /* "src/syntax/syntax.y":36  */
                   { node = new TreeNode().addChild(yystack.valueAt (0)); yyval = node; };
   break;
 
 
   case 3: /* List: LeftBracket Elements RightBracket  */
   if (yyn == 3)
-    /* "syntax.y":38  */
+    /* "src/syntax/syntax.y":38  */
                                         { yyval = new TreeNode("List").addChild(new TreeNode("LeftBracket")).addChild(yystack.valueAt (1)).addChild(new TreeNode("RightBracket"));};
   break;
 
 
   case 4: /* Elements: Element  */
   if (yyn == 4)
-    /* "syntax.y":40  */
+    /* "src/syntax/syntax.y":40  */
                   { yyval = new TreeNode("Elements").addChild(yystack.valueAt (0)); };
   break;
 
 
   case 5: /* Elements: Elements Element  */
   if (yyn == 5)
-    /* "syntax.y":40  */
+    /* "src/syntax/syntax.y":40  */
                                                                                      { TreeNode<String> elem = (TreeNode<String>) yystack.valueAt (1); yyval = elem.addChild(yystack.valueAt (0)); };
   break;
 
 
   case 6: /* Element: Atom  */
   if (yyn == 6)
-    /* "syntax.y":42  */
+    /* "src/syntax/syntax.y":42  */
               { yyval = yystack.valueAt (0); };
   break;
 
 
   case 7: /* Element: List  */
   if (yyn == 7)
-    /* "syntax.y":42  */
+    /* "src/syntax/syntax.y":42  */
                                   { yyval = yystack.valueAt (0); };
   break;
 
 
   case 8: /* Element: Literal  */
   if (yyn == 8)
-    /* "syntax.y":42  */
+    /* "src/syntax/syntax.y":42  */
                                                          { yyval = new TreeNode(yystack.valueAt (0).token); };
   break;
 
 
   case 9: /* Atom: Identifier  */
   if (yyn == 9)
-    /* "syntax.y":44  */
+    /* "src/syntax/syntax.y":44  */
                  { yyval = new TreeNode(yystack.valueAt (0).token); };
   break;
 
 
 
-/* "LISPParser.java":462  */
+/* "syntax.java":462  */
 
         default: break;
       }
@@ -1031,7 +1031,7 @@ private static final byte[] yycheck_ = yycheck_init();
   private static final int YYNTOKENS_ = 7;
 
 /* Unqualified %code blocks.  */
-/* "syntax.y":16  */
+/* "src/syntax/syntax.y":16  */
 
   public static TreeNode node;
 
@@ -1045,10 +1045,10 @@ private static final byte[] yycheck_ = yycheck_init();
     return;
   }
 
-/* "LISPParser.java":1049  */
+/* "syntax.java":1049  */
 
 }
-/* "syntax.y":47  */
+/* "src/syntax/syntax.y":47  */
 
 
 class LISPLexer implements LISPParser.Lexer {

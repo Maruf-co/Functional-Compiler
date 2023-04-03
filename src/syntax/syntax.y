@@ -4,6 +4,7 @@
 %define api.parser.class {LISPParser}
 %define api.parser.public
 %define parse.error verbose
+%define api.value.type {TreeNode}
 
 %code imports{
   import java.io.InputStream;
@@ -32,15 +33,15 @@
 %token RightBracket
 
 %%
-Program: Elements { node = new TreeNode("Program").addChild($1); $$ = node; };
+Program: Elements { node = new TreeNode().addChild($1); $$ = node; };
 
 List: LeftBracket Elements RightBracket { $$ = new TreeNode("List").addChild(new TreeNode("LeftBracket")).addChild($2).addChild(new TreeNode("RightBracket"));} ;
 
 Elements: Element { $$ = new TreeNode("Elements").addChild($1); } | Elements Element { TreeNode<String> elem = (TreeNode<String>) $1; $$ = elem.addChild($2); } ;
 
-Element: Atom { $$ = $1; } | List { $$ = $1; } | Literal { $$ = new TreeNode("Literal"); } ;
+Element: Atom { $$ = $1; } | List { $$ = $1; } | Literal { $$ = new TreeNode($1.token); } ;
 
-Atom: Identifier { $$ = new TreeNode("Identifier"); }
+Atom: Identifier { $$ = new TreeNode($1.token); }
 ;
 
 %%
@@ -71,7 +72,7 @@ class LISPLexer implements LISPParser.Lexer {
 }
 
 class TreeNode<T>{
-
+    // hui
     T data;
     TreeNode<T> parent;
     List<TreeNode<T>> children;
