@@ -4,22 +4,20 @@ import tokens.*;
 import java.util.ArrayList;
 
 /**
-    Lexer class to parse the input program into comprehensive
-    atom parts - tokens.
+    Lexer class to parse the input program into comprehensive 
+    atom parts - tokens. 
 **/
 %%
 %public
-%standalone
-
-%line
-%column
+%final
+%unicode
+%type Token
 
 %{  // injected after class declaration
     StringBuffer stringLiteralBuffer = new StringBuffer();
-    ArrayList<Token> tokenBuffer = new ArrayList();
 
-    private void capture(Token token) {
-        tokenBuffer.add(token);
+    private Token capture(Token token) {
+        return token;
     }
 
     private void expandLiteral(String text) {
@@ -34,21 +32,21 @@ Borders = "(" | ")"
 Number = (\+|\-)?\d*(\.?\d+)    // Number literal
 
 // Captures contents enclosed into string in ""
-%state STRING
+%state STRING   
 
 %%
 
-<YYINITIAL> {
-    "("                                         { capture(new LeftBracket()); return LISPLexer.LeftBracket; }
-    ")"                                         { capture(new RightBracket()); return LISPLexer.RightBracket; }
+<YYINITIAL> { 
+    "("                                         { return capture(new LeftBracket()); }
+    ")"                                         { return capture(new RightBracket()); }
     ({Whitespace}|{Borders})\"                  { stringLiteralBuffer.setLength(0); yybegin(STRING); }
     {Whitespace}                                { /* Skip */ }
-    ({Whitespace}|{Borders}){Number}            { capture(new Literal(yytext().trim())); return LISPLexer.Literal; }
-    {Identifier}                                { capture(new Identifier(yytext())); return LISPLexer.Identifier; }
+    ({Whitespace}|{Borders}){Number}            { return capture(new Literal(yytext().trim())); }
+    {Identifier}                                { return capture(new Identifier(yytext())); }
 }
 
 <STRING> {
-    \"                  { yybegin(YYINITIAL); capture(new Literal(stringLiteralBuffer.toString())); return LISPLexer.Literal; }
+    \"                  { yybegin(YYINITIAL); return capture(new Literal(stringLiteralBuffer.toString())); }
     \\t                 { stringLiteralBuffer.append('\t'); }
     \\n                 { stringLiteralBuffer.append('\n'); }
     \\r                 { stringLiteralBuffer.append('\r'); }
