@@ -26,7 +26,6 @@
   public static Object yylval;
 
   public static class TreeNode<T>{
-    // hui
     public T data;
     public LISPParser.TreeNode<T> parent;
     public List<LISPParser.TreeNode<T>> children;
