@@ -4,7 +4,9 @@ import java.util.Queue;
 
 import javax.management.Query;
 
-import syntax.TreeNode;
+import syntax.LISPParser.TreeNode;
+import tokens.Identifier;
+import tokens.Literal;
 
 public class Visualize {
     public static String TreeToPNG(TreeNode tree) {
@@ -21,7 +23,12 @@ public class Visualize {
                 nodes.add((TreeNode) child);
                 queue.add(++cnt);
                 String nodeContent = ((TreeNode) child).data.toString();
-                String toReplace = String.format("%d[label=%s];%d->%d;$", cnt, nodeContent, topID, cnt);
+                if (((TreeNode) child).data instanceof Identifier) {
+                     nodeContent = String.format("Identifier\\[ %s \\]", ((Identifier) ((TreeNode) child).data).identifier);
+                } else if (((TreeNode) child).data instanceof Literal) {
+                    nodeContent = String.format("Literal\\[ %s \\]", ((Literal) ((TreeNode) child).data).content);
+                }
+                String toReplace = String.format("%d[label=\"%s\"];%d->%d;$", cnt, nodeContent, topID, cnt);
                 dotOutput = dotOutput.replace("$", toReplace);
             }
         }

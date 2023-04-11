@@ -4,6 +4,7 @@ import tokens.*;
 import syntax.LISPParser;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -37,9 +38,21 @@ public class Main {
                 queueue.add(x);
             }
         }
-        
+        FileWriter dotOutput = new FileWriter("output.dot");
+        var dot = Visualize.TreeToPNG(LISPParser.node);
+        dotOutput.write(dot);
+        dotOutput.close();
+        String[] exec = {
+            "dot", "-Tpng", "-o output.png", "output.dot"       
+        };
+        var p = Runtime.getRuntime().exec(exec);
+        try {
+            System.out.println(p.waitFor());
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
-
     static void printTokens() {
         for (Token token: tokens){
             System.out.print(token.getName() + "");

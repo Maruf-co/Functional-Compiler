@@ -25,11 +25,12 @@ import java.util.ArrayList;
     }
 %}
 
-Identifier = [:jletter:][:jletterdigit:]*   // Variable/predefined function
 EOLN = \r|\n|\r\n                           // End of line
 Whitespace = {EOLN} | [ \t\f]               // Any space
+Boolean = true|false
 Borders = "(" | ")"
 Number = (\+|\-)?\d*(\.?\d+)    // Number literal
+Identifier = [a-zA-Z\_$][a-zA-Z0-9\_$]*   // Variable/predefined function
 
 // Captures contents enclosed into string in ""
 %state STRING   
@@ -37,12 +38,12 @@ Number = (\+|\-)?\d*(\.?\d+)    // Number literal
 %%
 
 <YYINITIAL> { 
-    "("                                         { return capture(new LeftBracket()); }
-    ")"                                         { return capture(new RightBracket()); }
-    ({Whitespace}|{Borders})\"                  { stringLiteralBuffer.setLength(0); yybegin(STRING); }
-    {Whitespace}                                { /* Skip */ }
-    ({Whitespace}|{Borders}){Number}            { return capture(new Literal(yytext().trim())); }
-    {Identifier}                                { return capture(new Identifier(yytext())); }
+    "("                                                 { return capture(new LeftBracket()); }
+    ")"                                                 { return capture(new RightBracket()); }
+    ({Whitespace}|{Borders})\"                          { stringLiteralBuffer.setLength(0); yybegin(STRING); }
+    {Whitespace}                                        { /* Skip */ }
+    {Number}|{Boolean}                                  { return capture(new Literal(yytext())); }
+    {Identifier}                                        { return capture(new Identifier(yytext())); }
 }
 
 <STRING> {
