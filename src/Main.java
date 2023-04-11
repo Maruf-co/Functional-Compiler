@@ -4,9 +4,7 @@
 import tokens.*;
 import syntax.LISPParser;
 
-import javax.swing.tree.TreeNode;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -18,6 +16,42 @@ public class Main {
     public static ArrayList<Token> tokens = new ArrayList<>();
 
 //
+
+    private static Literal validateAnd(Literal elem1, Literal elem2) {
+
+        if (Objects.equals(elem1.content, "true") || Objects.equals(elem1.content, "false") && Objects.equals(elem2.content, "true") || Objects.equals(elem2.content, "false")) {
+            var res = Boolean.valueOf(elem1.content) && Boolean.valueOf(elem2.content);
+            return new Literal(String.valueOf(res));
+        } else throw new IllegalStateException("And function required 2 Booleans");
+
+    }
+
+    private static Literal validateOr(Literal elem1, Literal elem2) {
+
+        if (Objects.equals(elem1.content, "true") || Objects.equals(elem1.content, "false") && Objects.equals(elem2.content, "true") || Objects.equals(elem2.content, "false")) {
+            var res = Boolean.parseBoolean(elem1.content) || Boolean.parseBoolean(elem2.content);
+            return new Literal(String.valueOf(res));
+        } else throw new IllegalStateException("Or function required 2 Booleans");
+
+    }
+
+    private static Literal validateXor(Literal elem1, Literal elem2) {
+
+        if (Objects.equals(elem1.content, "true") || Objects.equals(elem1.content, "false") && Objects.equals(elem2.content, "true") || Objects.equals(elem2.content, "false")) {
+            var res = !(Boolean.parseBoolean(elem1.content) || Boolean.parseBoolean(elem2.content));
+            return new Literal(String.valueOf(res));
+        } else throw new IllegalStateException("Xor function required 2 Booleans");
+
+    }
+
+    private static Literal validateNot(Literal elem1) {
+
+        if (Objects.equals(elem1.content, "true") || Objects.equals(elem1.content, "false")) {
+            var res = !Boolean.parseBoolean(elem1.content);
+            return new Literal(String.valueOf(res));
+        } else throw new IllegalStateException("Not function required Boolean");
+
+    }
 
     private static Literal validatePlus(Literal elem1, Literal elem2) {
 
@@ -72,7 +106,7 @@ public class Main {
         if (((Literal) elem1).content.chars().allMatch(Character::isDigit) && ((Literal) elem2).content.chars().allMatch(Character::isDigit)) {
             if (Integer.parseInt(elem1.content) == Integer.parseInt(elem2.content)) return new Literal("true");
             else return new Literal("false");
-        } else if (elem1.content == elem2.content) {
+        } else if (Objects.equals(elem1.content, elem2.content)) {
             return new Literal("true");
         }
         else return new Literal("false");
@@ -219,7 +253,7 @@ public class Main {
      * @param node
      * @return
      */
-    private static Literal evalSetq(Token node){
+    private static Literal validateSetQ(Token node){
         if(node instanceof Literal) return (Literal) node;
         else throw new IllegalStateException("Expression evaluation result must be literal");
     }
@@ -229,9 +263,22 @@ public class Main {
      * @param elem
      * @return
      */
-    private static Literal isInt(Literal elem) {
+    private static Literal validateIsInt(Literal elem) {
 
         if (((Literal) elem).content.chars().allMatch(Character::isDigit)) {
+            return new Literal("true");
+        } else return new Literal("false");
+
+    }
+
+    /**
+     * IsBool
+     * @param elem
+     * @return
+     */
+    private static Literal validateIsBool(Literal elem) {
+
+        if (Objects.equals(((Literal) elem).content, "true") || Objects.equals(((Literal) elem).content, "false")) {
             return new Literal("true");
         } else return new Literal("false");
 
@@ -402,8 +449,6 @@ public class Main {
 
                 var elem2 = recursivelyReturnToken(elementsChildren.get(2));
 
-                System.out.println(elem1.getName());
-                System.out.println(elem2.getName());
                 if (elem1 instanceof Literal && elem2 instanceof Literal) {
                     return validateGreateEq((Literal) elem1, (Literal) elem2);
                 } else throw new IllegalStateException("GreaterEq function required 2 Literals");
@@ -419,19 +464,122 @@ public class Main {
 
                 var expr = recursivelyReturnToken(elementsChildren.get(2));
 
-                return evalSetq(expr);
+                return validateSetQ(expr);
 
             }
+
+            /**
+             * Predicates
+             */
             else if (Objects.equals(funcName, "isint")) {
                 if (elementsChildren.size() != 2)
                     throw new IllegalStateException("Isint function needs 1 arguments, provided " + elementsChildren.size());
 
-                var elem = recursivelyReturnToken(elementsChildren.get(1))
+                var elem = recursivelyReturnToken(elementsChildren.get(1));
                 if(elem instanceof Identifier){
                     // !!! здесь нужно пытаться вытащить переменную
                 }
-                else if (elem instanceof Literal) return isInt((Literal) elem);
+                else if (elem instanceof Literal) return validateIsInt((Literal) elem);
                 else throw new IllegalStateException("Isint requires an Element");
+
+            }
+            else if (Objects.equals(funcName, "isbool")) {
+                if (elementsChildren.size() != 2)
+                    throw new IllegalStateException("Isbool function needs 1 arguments, provided " + elementsChildren.size());
+
+                var elem = recursivelyReturnToken(elementsChildren.get(1));
+                if(elem instanceof Identifier){
+                    // !!! здесь нужно пытаться вытащить переменную
+                }
+                else if (elem instanceof Literal) return validateIsBool((Literal) elem);
+                else throw new IllegalStateException("Isbool requires an Element");
+
+            }
+            else if (Objects.equals(funcName, "isatom")) {
+                if (elementsChildren.size() != 2)
+                    throw new IllegalStateException("Isatom function needs 1 arguments, provided " + elementsChildren.size());
+
+                var elem = recursivelyReturnToken(elementsChildren.get(1));
+                if(elem instanceof Identifier){
+                    return new Literal("true");
+                }
+                else return new Literal("false");
+
+            }
+            else if (Objects.equals(funcName, "islist")) {
+                if (elementsChildren.size() != 2)
+                    throw new IllegalStateException("Islist function needs 1 arguments, provided " + elementsChildren.size());
+
+                if(Objects.equals(elementsChildren.get(1).data, "List")){
+                    return new Literal("true");
+                }
+                else return new Literal("false");
+
+            }
+            /**
+             * Logical operations
+             */
+            else if (Objects.equals(funcName, "and")) {
+                if (elementsChildren.size() != 3)
+                    throw new IllegalStateException("And function needs 2 arguments, provided " + elementsChildren.size());
+
+                // берем 2 слогаемых
+                var elem1 = recursivelyReturnToken(elementsChildren.get(1));
+
+                var elem2 = recursivelyReturnToken(elementsChildren.get(2));
+
+                if (elem1 instanceof Literal && elem2 instanceof Literal) {
+                    return validateAnd((Literal) elem1, (Literal) elem2);
+                } else throw new IllegalStateException("And function required 2 Literals");
+            }
+
+            else if (Objects.equals(funcName, "or")) {
+                if (elementsChildren.size() != 3)
+                    throw new IllegalStateException("Or function needs 2 arguments, provided " + elementsChildren.size());
+
+                // берем 2 слогаемых
+                var elem1 = recursivelyReturnToken(elementsChildren.get(1));
+
+                var elem2 = recursivelyReturnToken(elementsChildren.get(2));
+
+                if (elem1 instanceof Literal && elem2 instanceof Literal) {
+                    return validateOr((Literal) elem1, (Literal) elem2);
+                } else throw new IllegalStateException("Or function required 2 Literals");
+            }
+
+            else if (Objects.equals(funcName, "xor")) {
+                if (elementsChildren.size() != 3)
+                    throw new IllegalStateException("Xor function needs 2 arguments, provided " + elementsChildren.size());
+
+                // берем 2 слогаемых
+                var elem1 = recursivelyReturnToken(elementsChildren.get(1));
+
+                var elem2 = recursivelyReturnToken(elementsChildren.get(2));
+
+                if (elem1 instanceof Literal && elem2 instanceof Literal) {
+                    return validateXor((Literal) elem1, (Literal) elem2);
+                } else throw new IllegalStateException("Xor function required 2 Literals");
+            }
+
+            else if (Objects.equals(funcName, "not")) {
+                if (elementsChildren.size() != 2)
+                    throw new IllegalStateException("Not function needs 1 argument, provided " + elementsChildren.size());
+
+                var elem1 = recursivelyReturnToken(elementsChildren.get(1));
+
+
+                if (elem1 instanceof Literal) {
+                    return validateNot((Literal) elem1);
+                } else throw new IllegalStateException("Not function required 2 Literals");
+            }
+
+            else if (Objects.equals(funcName, "eval")) {
+                if (elementsChildren.size() != 2)
+                    throw new IllegalStateException("Eval function needs 1 argument, provided " + elementsChildren.size());
+
+                return recursivelyReturnToken(elementsChildren.get(1));
+
+
 
             }
 
@@ -454,49 +602,56 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 //       visualize();
-        var reader = new FileReader("input.txt");
+        var reader = new FileReader("/Users/k.tyulebaeva/Desktop/Functional-Compiler/src/input.txt");
         ArrayDeque queueue = new ArrayDeque<LISPParser.TreeNode>();
         var lexer = new LISPParser.LISPLexer(reader);
         var parser = new LISPParser(lexer);
         parser.parse();
         LISPParser.TreeNode node = LISPParser.node;
         queueue.add(node);
-        while (!queueue.isEmpty()) {
-            LISPParser.TreeNode p = (LISPParser.TreeNode) queueue.poll();
-            if (p.data != null) {
-                if (p.data instanceof Identifier) {
-                    System.out.printf("Identifier@%s\n", ((Identifier) p.data).identifier) ;
-                }
-                else if (p.data instanceof Literal) {
-                    System.out.printf("Literal[%s]\n", ((Literal) p.data).content) ;
-                } else {
-                    System.out.println(p.data.toString());
-                }
-            }
-            for (Object x: p.children) {
-                queueue.add(x);
-            }
-        }
-        FileWriter dotOutput = new FileWriter("output.dot");
-        var dot = Visualize.TreeToPNG(LISPParser.node);
-        dotOutput.write(dot);
-        dotOutput.close();
-        String[] exec = {
-            "dot", "-Tpng", "-o output.png", "output.dot"
-        };
-        var p = Runtime.getRuntime().exec(exec);
-        try {
-            System.out.println(p.waitFor());
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         var child = (LISPParser.TreeNode) node.children.get(0);
         var nextChild = (LISPParser.TreeNode) child.children.get(0);
 
         // var elements = ((LISPParser.TreeNode) nextChild.children.get(1));
         var test = validateElements(child);
         System.out.println(((Literal) test).content);
+//
+//        while (!queueue.isEmpty()) {
+//            LISPParser.TreeNode p = (LISPParser.TreeNode) queueue.poll();
+//            if (p.data != null) {
+//                if (p.data instanceof Identifier) {
+//                    System.out.printf("Identifier@%s\n", ((Identifier) p.data).identifier) ;
+//                }
+//                else if (p.data instanceof Literal) {
+//                    System.out.printf("Literal[%s]\n", ((Literal) p.data).content) ;
+//                } else {
+//                    System.out.println(p.data.toString());
+//                }
+//            }
+//            for (Object x: p.children) {
+//                queueue.add(x);
+//            }
+//        }
+//        FileWriter dotOutput = new FileWriter("output.dot");
+//        var dot = Visualize.TreeToPNG(LISPParser.node);
+//        dotOutput.write(dot);
+//        dotOutput.close();
+//        String[] exec = {
+//            "dot", "-Tpng", "-o output.png", "output.dot"
+//        };
+//        var p = Runtime.getRuntime().exec(exec);
+//        try {
+//            System.out.println(p.waitFor());
+//        } catch (InterruptedException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        var child = (LISPParser.TreeNode) node.children.get(0);
+//        var nextChild = (LISPParser.TreeNode) child.children.get(0);
+//
+//        // var elements = ((LISPParser.TreeNode) nextChild.children.get(1));
+//        var test = validateElements(child);
+//        System.out.println(((Literal) test).content);
 //        while (!queueue.isEmpty()) {
 //            LISPParser.TreeNode p = (LISPParser.TreeNode) queueue.poll();
 //            if (p.data != null) {
