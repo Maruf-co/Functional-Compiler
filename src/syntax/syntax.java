@@ -34,7 +34,7 @@
 
 
 /* "%code imports" blocks.  */
-/* "syntax/syntax.y":10  */
+/* "syntax.y":10  */
 
     package syntax;
   import java.io.InputStream;
@@ -48,10 +48,10 @@
   import syntax.Yylex;
   import tokens.*;
 
-/* "syntax/LISPParser.java":52  */
+/* "syntax.java":52  */
 
 /**
- * A Bison parser, automatically generated from <tt>syntax/syntax.y</tt>.
+ * A Bison parser, automatically generated from <tt>syntax.y</tt>.
  *
  * @author LALR (1) parser skeleton written by Paolo Bonzini.
  */
@@ -301,62 +301,62 @@ public class LISPParser
       {
           case 2:
   if (yyn == 2)
-    /* "syntax/syntax.y":125  */
-                  { node = ((LISPParser.TreeNode)(yystack.valueAt (0))); yyval = ((LISPParser.TreeNode)(yystack.valueAt (0))); };
+    /* "syntax.y":99  */
+                  { node = new TreeNode("Program").addChild(((LISPParser.TreeNode)(yystack.valueAt (0)))); yyval = node; };
   break;
     
 
   case 3:
   if (yyn == 3)
-    /* "syntax/syntax.y":127  */
-                                        { yyval = ((LISPParser.TreeNode)(yystack.valueAt (1))); };
+    /* "syntax.y":101  */
+                                        { yyval = new TreeNode("List").addChild(new TreeNode("LeftBracket")).addChild(((LISPParser.TreeNode)(yystack.valueAt (1)))).addChild(new TreeNode("RightBracket"));};
   break;
     
 
   case 4:
   if (yyn == 4)
-    /* "syntax/syntax.y":129  */
-                  { yyval = new NonTerminalNode("Elements").addChild(((LISPParser.TreeNode)(yystack.valueAt (0)))); };
+    /* "syntax.y":103  */
+                  { yyval = new TreeNode("Elements").addChild(((LISPParser.TreeNode)(yystack.valueAt (0)))); };
   break;
     
 
   case 5:
   if (yyn == 5)
-    /* "syntax/syntax.y":129  */
-                                                                                            { TreeNode elem = ((LISPParser.TreeNode)(yystack.valueAt (1))); yyval = elem.addChild(((LISPParser.TreeNode)(yystack.valueAt (0)))); };
+    /* "syntax.y":103  */
+                                                                                     { TreeNode elem = (TreeNode) ((LISPParser.TreeNode)(yystack.valueAt (1))); yyval = elem.addChild(((LISPParser.TreeNode)(yystack.valueAt (0)))); };
   break;
     
 
   case 6:
   if (yyn == 6)
-    /* "syntax/syntax.y":131  */
+    /* "syntax.y":105  */
               { yyval = ((LISPParser.TreeNode)(yystack.valueAt (0))); };
   break;
     
 
   case 7:
   if (yyn == 7)
-    /* "syntax/syntax.y":131  */
+    /* "syntax.y":105  */
                                   { yyval = ((LISPParser.TreeNode)(yystack.valueAt (0))); };
   break;
     
 
   case 8:
   if (yyn == 8)
-    /* "syntax/syntax.y":131  */
-                                                         { yyval = new TerminalNode(((Token)(yystack.valueAt (0)))); };
+    /* "syntax.y":105  */
+                                                         { yyval = new TreeNode(((Token)(yystack.valueAt (0)))); };
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "syntax/syntax.y":133  */
-                 { yyval = new TerminalNode(((Token)(yystack.valueAt (0)))); };
+    /* "syntax.y":107  */
+                 { yyval = new TreeNode(((Token)(yystack.valueAt (0)))); };
   break;
     
 
 
-/* "syntax/LISPParser.java":360  */
+/* "syntax.java":360  */
 
         default: break;
       }
@@ -907,56 +907,30 @@ private static final byte yycheck_[] = yycheck_init();
 
 /* User implementation code.  */
 /* Unqualified %code blocks.  */
-/* "syntax/syntax.y":24  */
+/* "syntax.y":24  */
 
   public static LISPParser.TreeNode node;
   public static Object yylval;
 
-  public static class TreeNode {
-    public Token data;
-    public String nodeName;
-    public List<LISPParser.TreeNode> children;
+  public static class TreeNode{
+    // hui
+    public T data;
+    public LISPParser.TreeNode parent;
+    public List<LISPParser.TreeNode children;
 
-
-    public TreeNode(Token data) {
+    public TreeNode(T data) {
         this.data = data;
-        this.children = new LinkedList<LISPParser.TreeNode>();
+        this.children = new LinkedList<LISPParser.TreeNode();
     }
 
-    public TreeNode addChild(TreeNode obj) {
-        var childNode = obj;
+    public TreeNode addChild(Object obj) {
+        var childNode = (LISPParser.TreeNode) obj;
+        childNode.parent = this;
         this.children.add(childNode);
         return this;
     }
 
-    public boolean isTerminal(){
-      return false;
-    }
-  }
-
-  public static class TerminalNode extends TreeNode{
-    public TerminalNode(Token data) {
-        super(data);
-    }
-
-    public boolean isTerminal(){
-      return true;
-    }
-  }
-  
-  public static class NonTerminalNode extends TreeNode {
-
-    
-    public NonTerminalNode(String name) {
-        super(null);
-        this.nodeName = name;
-    }
-
-    public boolean isTerminal(){
-      return false;
-    }
-  }
-
+ }
 
  
 public static class LISPLexer implements LISPParser.Lexer {
@@ -996,11 +970,11 @@ public static class LISPLexer implements LISPParser.Lexer {
   }
 }
 
-/* "syntax/LISPParser.java":1000  */
+/* "syntax.java":974  */
 
 }
 
-/* "syntax/syntax.y":136  */
+/* "syntax.y":110  */
 
 
 

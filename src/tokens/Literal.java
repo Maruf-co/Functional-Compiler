@@ -1,18 +1,28 @@
 package tokens;
 
-public class Literal extends Token {
-    
-    public String content = new String();
-    public Literal() {
+public abstract class Literal extends Token {
+
+    public static enum LiteralType {
+        STRING,
+        NUMBER,
+        BOOLEAN,
     }
 
-    public Literal(String rawString) {
-        super(rawString);
-        this.content = rawString;
+    protected String literal;
+
+    Literal(String literalValue) {
+        this.literal = literalValue;
     }
 
     @Override
-    public String getName() {
-        return "LITERAL";
+    public boolean isLiteral() {
+        return true;
+    }  
+
+    public String toString() {
+        return String.format("Literal [%s]", this.getValue().toString());
     }
+
+    abstract public LiteralType getLiteralType();
+
 }

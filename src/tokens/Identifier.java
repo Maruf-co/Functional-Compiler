@@ -1,20 +1,23 @@
 package tokens;
 
 public class Identifier extends Token {
-    
-
-    public Identifier() {
-    }
-
-    public String identifier = new String();
+    public String identifier;
 
     public Identifier(String rawString) {
         super(rawString);
         this.identifier = rawString;
     }
 
+    public boolean isIdentifier() {
+        return true;
+    }
+
+    public String toString() {
+        return String.format("Identifier [%s]", this.getValue().toString());
+    }
+
     @Override
-    public String getName() {
-        return "IDENTIFIER";
+    public String getValue() {
+        return this.identifier;
     }
 }

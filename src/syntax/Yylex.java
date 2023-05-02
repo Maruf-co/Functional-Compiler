@@ -65,7 +65,7 @@ public final class Yylex {
   private static final String ZZ_ACTION_PACKED_0 =
     "\2\0\1\1\2\2\3\3\1\4\1\5\1\1\1\6"+
     "\1\1\1\7\1\10\1\11\1\12\2\3\1\0\1\6"+
-    "\1\13\1\14\1\15\1\16\2\3\1\6";
+    "\1\13\1\14\1\15\1\16\2\3\1\17";
 
   private static int [] zzUnpackAction() {
     int [] result = new int[28];
@@ -584,72 +584,77 @@ public final class Yylex {
             { throw new Error("Unexpected character <"+yytext()+">");
             } 
             // fall through
-          case 15: break;
+          case 16: break;
           case 2: 
             { /* Skip */
             } 
             // fall through
-          case 16: break;
+          case 17: break;
           case 3: 
             { return capture(new Identifier(yytext()));
             } 
             // fall through
-          case 17: break;
+          case 18: break;
           case 4: 
             { return capture(new LeftBracket());
             } 
             // fall through
-          case 18: break;
+          case 19: break;
           case 5: 
             { return capture(new RightBracket());
             } 
             // fall through
-          case 19: break;
+          case 20: break;
           case 6: 
-            { return capture(new Literal(yytext()));
+            { return capture(new NumberLiteral(yytext()));
             } 
             // fall through
-          case 20: break;
+          case 21: break;
           case 7: 
             { stringLiteralBuffer.append(yytext());
             } 
             // fall through
-          case 21: break;
+          case 22: break;
           case 8: 
-            { yybegin(YYINITIAL); return capture(new Literal(stringLiteralBuffer.toString()));
+            { yybegin(YYINITIAL); return capture(new StringLiteral(stringLiteralBuffer.toString()));
             } 
             // fall through
-          case 22: break;
+          case 23: break;
           case 9: 
             { stringLiteralBuffer.append('\\');
             } 
             // fall through
-          case 23: break;
+          case 24: break;
           case 10: 
             { stringLiteralBuffer.setLength(0); yybegin(STRING);
             } 
             // fall through
-          case 24: break;
+          case 25: break;
           case 11: 
             { stringLiteralBuffer.append('\t');
             } 
             // fall through
-          case 25: break;
+          case 26: break;
           case 12: 
             { stringLiteralBuffer.append('\r');
             } 
             // fall through
-          case 26: break;
+          case 27: break;
           case 13: 
             { stringLiteralBuffer.append('"');
             } 
             // fall through
-          case 27: break;
+          case 28: break;
           case 14: 
             { stringLiteralBuffer.append('\n');
             } 
             // fall through
-          case 28: break;
+          case 29: break;
+          case 15: 
+            { return capture(new BooleanLiteral(yytext()));
+            } 
+            // fall through
+          case 30: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }

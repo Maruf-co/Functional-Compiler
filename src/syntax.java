@@ -48,7 +48,7 @@
   import syntax.Yylex;
   import tokens.*;
 
-/* "syntax/LISPParser.java":52  */
+/* "syntax.java":52  */
 
 /**
  * A Bison parser, automatically generated from <tt>syntax/syntax.y</tt>.
@@ -301,62 +301,62 @@ public class LISPParser
       {
           case 2:
   if (yyn == 2)
-    /* "syntax/syntax.y":125  */
-                  { node = ((LISPParser.TreeNode)(yystack.valueAt (0))); yyval = ((LISPParser.TreeNode)(yystack.valueAt (0))); };
+    /* "syntax/syntax.y":119  */
+                  { node = new NonTerminalNode("Program").addChild(((LISPParser.TreeNode)(yystack.valueAt (0)))); yyval = node; };
   break;
     
 
   case 3:
   if (yyn == 3)
-    /* "syntax/syntax.y":127  */
-                                        { yyval = ((LISPParser.TreeNode)(yystack.valueAt (1))); };
+    /* "syntax/syntax.y":121  */
+                                        { yyval = new NonTerminalNode("List").addChild(new TerminalNode("LeftBracket")).addChild(((LISPParser.TreeNode)(yystack.valueAt (1)))).addChild(new TerminalNode("RightBracket"));};
   break;
     
 
   case 4:
   if (yyn == 4)
-    /* "syntax/syntax.y":129  */
+    /* "syntax/syntax.y":123  */
                   { yyval = new NonTerminalNode("Elements").addChild(((LISPParser.TreeNode)(yystack.valueAt (0)))); };
   break;
     
 
   case 5:
   if (yyn == 5)
-    /* "syntax/syntax.y":129  */
+    /* "syntax/syntax.y":123  */
                                                                                             { TreeNode elem = ((LISPParser.TreeNode)(yystack.valueAt (1))); yyval = elem.addChild(((LISPParser.TreeNode)(yystack.valueAt (0)))); };
   break;
     
 
   case 6:
   if (yyn == 6)
-    /* "syntax/syntax.y":131  */
+    /* "syntax/syntax.y":125  */
               { yyval = ((LISPParser.TreeNode)(yystack.valueAt (0))); };
   break;
     
 
   case 7:
   if (yyn == 7)
-    /* "syntax/syntax.y":131  */
+    /* "syntax/syntax.y":125  */
                                   { yyval = ((LISPParser.TreeNode)(yystack.valueAt (0))); };
   break;
     
 
   case 8:
   if (yyn == 8)
-    /* "syntax/syntax.y":131  */
+    /* "syntax/syntax.y":125  */
                                                          { yyval = new TerminalNode(((Token)(yystack.valueAt (0)))); };
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "syntax/syntax.y":133  */
+    /* "syntax/syntax.y":127  */
                  { yyval = new TerminalNode(((Token)(yystack.valueAt (0)))); };
   break;
     
 
 
-/* "syntax/LISPParser.java":360  */
+/* "syntax.java":360  */
 
         default: break;
       }
@@ -914,17 +914,16 @@ private static final byte yycheck_[] = yycheck_init();
 
   public static class TreeNode {
     public Token data;
-    public String nodeName;
-    public List<LISPParser.TreeNode> children;
-
+    public List<LISPParser.TreeNode children;
 
     public TreeNode(Token data) {
         this.data = data;
-        this.children = new LinkedList<LISPParser.TreeNode>();
+        this.children = new LinkedList<LISPParser.TreeNode();
     }
 
-    public TreeNode addChild(TreeNode obj) {
-        var childNode = obj;
+    public TreeNode addChild(Object obj) {
+        var childNode = (LISPParser.TreeNode) obj;
+        childNode.parent = this;
         this.children.add(childNode);
         return this;
     }
@@ -935,21 +934,16 @@ private static final byte yycheck_[] = yycheck_init();
   }
 
   public static class TerminalNode extends TreeNode{
-    public TerminalNode(Token data) {
-        super(data);
-    }
-
     public boolean isTerminal(){
       return true;
     }
   }
   
-  public static class NonTerminalNode extends TreeNode {
-
+  public statis class NonTerminalNode extends TreeNode {
     
-    public NonTerminalNode(String name) {
-        super(null);
-        this.nodeName = name;
+    public TreeNode(Token data) {
+        this.data = null;
+        this.children = new LinkedList<LISPParser.TreeNode();
     }
 
     public boolean isTerminal(){
@@ -996,11 +990,11 @@ public static class LISPLexer implements LISPParser.Lexer {
   }
 }
 
-/* "syntax/LISPParser.java":1000  */
+/* "syntax.java":994  */
 
 }
 
-/* "syntax/syntax.y":136  */
+/* "syntax/syntax.y":130  */
 
 
 
