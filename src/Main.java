@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 
 import program.ProgramExecution;
+import program.ProgramState;
 import program.SyntaxException;
 import syntax.LISPParser;
 
@@ -15,7 +16,7 @@ public class Main {
         parser.parse();
 
 
-        var result = ProgramExecution.execute(LISPParser.node);
+        var result = ProgramExecution.execute(LISPParser.node, new ProgramState());
         System.out.println(result.getValue());
         
         System.out.println(LISPParser.node);
@@ -39,7 +40,7 @@ public class Main {
                 level.add(lvl + 1);
             }
         }
-        // visualize();
+        visualize();
     }
     static void visualize() throws IOException {
         FileWriter dotOutput = new FileWriter("output.dot");

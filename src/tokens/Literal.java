@@ -6,6 +6,7 @@ public abstract class Literal extends Token {
         STRING,
         NUMBER,
         BOOLEAN,
+        COMPOSITE,
     }
 
     protected String literal;
@@ -13,6 +14,8 @@ public abstract class Literal extends Token {
     Literal(String literalValue) {
         this.literal = literalValue;
     }
+
+    Literal() {}
 
     @Override
     public boolean isLiteral() {

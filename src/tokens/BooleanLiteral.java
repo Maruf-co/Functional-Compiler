@@ -9,6 +9,12 @@ public class BooleanLiteral extends tokens.Literal {
         this.literalValue = (rawString.equals("true"));
     }
 
+    public BooleanLiteral(Boolean literalValue) {
+        super();
+        this.literalValue = literalValue;
+    }
+
+
     @Override
     public Boolean getValue() {
         return literalValue;

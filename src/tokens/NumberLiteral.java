@@ -14,6 +14,16 @@ public class NumberLiteral extends tokens.Literal {
         this.literalValue = value;
     }
 
+    public NumberLiteral(Literal value) {
+        super(value.toString());
+        if (value.getLiteralType() == LiteralType.BOOLEAN) {
+            this.literalValue = ((BooleanLiteral) value).getValue() ? 0. : 1.;
+        } else {
+            this.literalValue = ((NumberLiteral) value).getValue();
+        }
+    }
+
+
     @Override
     public Double getValue() {
         return literalValue;

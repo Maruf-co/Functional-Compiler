@@ -2,34 +2,36 @@ package program;
 
 import java.util.ArrayList;
 
-import javax.swing.text.html.parser.Element;
-
 import syntax.LISPParser.TreeNode;
+import tokens.CompositeLiteral;
 import tokens.Identifier;
 import tokens.Literal;
-import tokens.StringLiteral;
+import tokens.Token;
 
 public class ProgramExecution {
-    static Literal evaluateIdentifier(Identifier identifier) {
-        // TODO: Change to real evaluation
-        // once `setq` is available
-        return new StringLiteral("boo");
+
+    static Literal evaluateIdentifier(Identifier identifier, ProgramState state) throws SyntaxException {
+        if (state.isDefined(identifier)) {
+            return state.getValue(identifier);
+        } else {
+            throw new SyntaxException("Variable " + identifier.getValue() + " is not defined");
+        }
     }
 
-    static Literal evaluateElement(TreeNode element) throws IllegalStateException, SyntaxException {
+    static Literal evaluateElement(TreeNode element, ProgramState state) throws IllegalStateException, SyntaxException {
         if (element.isTerminal()) {
             var token = element.data;
             if (token.isIdentifier()) {
-                return evaluateIdentifier((Identifier) token);
+                return evaluateIdentifier((Identifier) token, state);
             } else {
                 return (Literal) token;
             }
         } else {
-            return evaluateElements(element);
+            return evaluateElements(element, state);
         }
     }
 
-    static Literal evaluateElements(TreeNode elements) throws IllegalStateException, SyntaxException {
+    static Literal evaluateElements(TreeNode elements, ProgramState state) throws IllegalStateException, SyntaxException {
         if (elements.children.isEmpty()) {
             throw new IllegalStateException("Evaluation called with an empty list");
         } 
@@ -42,19 +44,29 @@ public class ProgramExecution {
                 if (ProgramBuiltin.isBuiltIn((Identifier) token)) {
                     var values = new ArrayList<Literal>();
                     for (int i = 1; i < elements.children.size(); ++i) {
-                        values.add(evaluateElement(elements.children.get(i)));
+                        values.add(evaluateElement(elements.children.get(i), state));
                     }
-                    return ProgramBuiltin.executeBuiltin((Identifier) token, values);
-                } else {
+                    return ProgramBuiltin.executeBuiltin((Identifier) token, values, state);
+                } 
+                else if (ProgramDeclaration.isDeclaration((Identifier) token)) {
+                    return ProgramDeclaration.executeUtility((Identifier) token, elements, state);
+                }
+                else {
                     // TODO: Finish when user-defined
                     // functions are available
-                    throw new IllegalStateException("Encountered not a built-in function");
+                    var evaluatedChildren = new ArrayList<Literal>();
+                    for (var child : elements.children) {
+                        evaluatedChildren.add(evaluateElement(child, state));
+                    }
+
+                    var compositeLiteral = new CompositeLiteral(evaluatedChildren);
+                    return compositeLiteral;
                 }
             }
             else /* if (token.isLiteral())  */{
                 var values = new ArrayList<Literal>();
                 for (int i = 1; i < elements.children.size(); ++i) {
-                    values.add(evaluateElement(elements.children.get(i)));
+                    values.add(evaluateElement(elements.children.get(i), state));
                 }
                 if (!values.isEmpty()) {
                     return values.get(values.size() - 1);
@@ -65,7 +77,7 @@ public class ProgramExecution {
         else {
             var values = new ArrayList<Literal>();
             for (int i = 1; i < elements.children.size(); ++i) {
-                values.add(evaluateElement(elements.children.get(i)));
+                values.add(evaluateElement(elements.children.get(i), state));
             }
             if (!values.isEmpty()) {
                 return values.get(values.size() - 1);
@@ -74,10 +86,10 @@ public class ProgramExecution {
         }
     }
 
-    static public Literal execute(TreeNode node) throws IllegalStateException, SyntaxException {
+    static public Literal execute(TreeNode node, ProgramState state) throws IllegalStateException, SyntaxException {
         var results = new ArrayList<Literal>();
         for (var child : node.children) {
-            results.add(evaluateElement(child));
+            results.add(evaluateElement(child, state));
         }
         return results.get(results.size() - 1);
     }
