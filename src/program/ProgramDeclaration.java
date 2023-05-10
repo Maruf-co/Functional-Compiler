@@ -35,7 +35,7 @@ public class ProgramDeclaration {
 
     public static Literal func(TreeNode node, ProgramState state) throws SyntaxException {
         var arguments = new ArrayList<Identifier>();
-        for (var argument : node.children.get(1).children) {
+        for (var argument : node.children.get(2).children) {
             if (!argument.isTerminal()) {
                 throw new SyntaxException("Function arguments must be identifiers");
             }
@@ -45,7 +45,7 @@ public class ProgramDeclaration {
 
         if (node.children.get(1).isTerminal()) {
             Identifier variableName = (Identifier) node.children.get(1).data;
-            state.setFunction(variableName, arguments, node.children.get(2));
+            state.setFunction(variableName, arguments, node.children.get(3));
             return new UnitLiteral();
         } else {
             throw new SyntaxException("Function name must be an identifier");

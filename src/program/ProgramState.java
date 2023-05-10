@@ -3,6 +3,7 @@ package program;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.sun.source.tree.Tree;
@@ -11,6 +12,17 @@ import tokens.Identifier;
 import tokens.Literal;
 
 public class ProgramState {
+
+    public ProgramState withVariables(List<Variable> variables) {
+        this.variables = new ArrayList<>(variables);
+        return this;
+    }
+
+    public ProgramState withFunctions(Map<String, Function> functions) {
+        this.functions = new HashMap<>(functions);
+        return this;
+    }
+
     // A storage of all the variables
     // and their values
     static class Variable {

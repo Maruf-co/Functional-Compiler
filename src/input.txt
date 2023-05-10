@@ -1,4 +1,4 @@
-(tail (1 2 3 4))
-
+(func makeList (A) (A))
+(makeList (3 4))
 
 
