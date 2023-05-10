@@ -38,14 +38,16 @@ public class ProgramExecution {
         if (firstElement.isTerminal()) {
             var token = firstElement.data;
             if (token.isIdentifier()) {
-                if (ProgramBuiltin.isBuiltIn((Identifier) token)) {
+                var identifierToken = (Identifier) token;
+                if (ProgramBuiltin.isBuiltIn(identifierToken)) {
                     var values = new ArrayList<Literal>();
                     for (int i = 1; i < elements.children.size(); ++i) {
                         values.add(evaluateElement(elements.children.get(i), state));
                     }
-                    return ProgramBuiltin.executeBuiltin((Identifier) token, values, state);
-                } else if (ProgramBuiltin.isListOperation((Identifier) token)) {
-                    switch (((Identifier) token).getValue()) {
+                    return ProgramBuiltin.executeBuiltin(identifierToken, values, state);
+                }
+                else if (ProgramBuiltin.isListOperation(identifierToken)){
+                    switch(identifierToken.getValue()){
                         case "head": {
                             if (elements.children.size() != 2)
                                 throw new SyntaxException("head expected 1 element, got " + elements.children.size());
@@ -95,8 +97,27 @@ public class ProgramExecution {
                     }
                     return new NumberLiteral(0.0);
                 }
-                else if (ProgramDeclaration.isDeclaration((Identifier) token)) {
-                    return ProgramDeclaration.executeUtility((Identifier) token, elements, state);
+                else if (ProgramDeclaration.isDeclaration(identifierToken)) {
+                    return ProgramDeclaration.executeUtility(identifierToken, elements, state);
+                }
+                else if (state.isFunctionDefined(identifierToken)) {
+                    ProgramState.Function function = state.getFunction(identifierToken);
+
+                    var values = new ArrayList<Literal>();
+                    for (int i = 1; i < elements.children.size(); ++i) {
+                        values.add(evaluateElement(elements.children.get(i), state));
+                    }
+                    if (values.size() != function.arguments.size()) {
+                        throw new SyntaxException("Function requires " + function.arguments.size() + " arguments");
+                    }
+
+                    var localState = new ProgramState()
+                            .withVariables(state.variables)
+                            .withFunctions(state.functions);
+                    for (int i = 0; i < values.size(); i++) {
+                        localState.setValue(function.arguments.get(i), values.get(i));
+                    }
+                    return evaluateElement(function.elements, localState);
                 } else {
                     // TODO: Finish when user-defined
                     // functions are available

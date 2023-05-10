@@ -7,6 +7,7 @@ public abstract class Literal extends Token {
         NUMBER,
         BOOLEAN,
         COMPOSITE,
+        UNIT
     }
 
     protected String literal;
