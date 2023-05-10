@@ -14,8 +14,6 @@ public class ProgramBuiltin {
         "minus",
         "divide",
         "times",
-        "head",
-        "tail",
         "cons", 
         "equal",
         "nonequal",
@@ -36,8 +34,19 @@ public class ProgramBuiltin {
         "eval"
     };
 
+    static String[] listOperations = {"head", "tail"};
+
     static boolean isBuiltIn(Identifier identifier) {
         for (var builtin : ProgramBuiltin.builtins) {
+            if (builtin.equals(identifier.getValue())) {
+                return true;
+            }
+        } return false;
+
+    }
+
+    static boolean isListOperation(Identifier identifier) {
+        for (var builtin : ProgramBuiltin.listOperations) {
             if (builtin.equals(identifier.getValue())) {
                 return true;
             }
@@ -144,7 +153,8 @@ public class ProgramBuiltin {
                 );
             }
             case "head":{
-                // FIXME
+               // var head = tokens.get(0);
+
             }
             case "tail":{
                 // FIXME
@@ -308,12 +318,12 @@ public class ProgramBuiltin {
                 var token_two = tokens.get(1);  
 
                 // Checks if both literals are boolean literals
-                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_one.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_two.getLiteralType() != Literal.LiteralType.BOOLEAN) {
                     // throw a syntax error 
                     throw new SyntaxException("and expects a boolean parameters");
                 }
                 return new BooleanLiteral(
-                    ((BooleanLiteral) token_two).getValue() && ((BooleanLiteral) token_two).getValue()
+                    ((BooleanLiteral) token_one).getValue() && ((BooleanLiteral) token_two).getValue()
                 );
                 
             }
@@ -325,12 +335,12 @@ public class ProgramBuiltin {
                 var token_two = tokens.get(1);  
 
                 // Checks if both literals are boolean literals
-                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_one.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_two.getLiteralType() != Literal.LiteralType.BOOLEAN) {
                     // throw a syntax error 
                     throw new SyntaxException("or expects a boolean parameters");
                 }
                 return new BooleanLiteral(
-                    ((BooleanLiteral) token_two).getValue() || ((BooleanLiteral) token_two).getValue()
+                    ((BooleanLiteral) token_one).getValue() || ((BooleanLiteral) token_two).getValue()
                 );
             }
             case "xor": {
@@ -338,12 +348,12 @@ public class ProgramBuiltin {
                 var token_two = tokens.get(1);  
 
                 // Checks if both literals are boolean literals
-                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_one.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_two.getLiteralType() != Literal.LiteralType.BOOLEAN) {
                     // throw a syntax error 
                     throw new SyntaxException("xor expects a boolean parameters");
                 }
                 return new BooleanLiteral(
-                    ((BooleanLiteral) token_two).getValue() ^ ((BooleanLiteral) token_two).getValue()
+                    ((BooleanLiteral) token_one).getValue() ^ ((BooleanLiteral) token_two).getValue()
                 );
             }
             case "not": {

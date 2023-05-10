@@ -3,10 +3,7 @@ package program;
 import java.util.ArrayList;
 
 import syntax.LISPParser.TreeNode;
-import tokens.CompositeLiteral;
-import tokens.Identifier;
-import tokens.Literal;
-import tokens.Token;
+import tokens.*;
 
 public class ProgramExecution {
 
@@ -47,7 +44,38 @@ public class ProgramExecution {
                         values.add(evaluateElement(elements.children.get(i), state));
                     }
                     return ProgramBuiltin.executeBuiltin((Identifier) token, values, state);
-                } 
+                }
+                else if (ProgramBuiltin.isListOperation((Identifier) token)){
+                    switch(((Identifier) token).getValue()){
+                        case "head": {
+                            if(elements.children.size() != 2) throw new SyntaxException("head expected 1 element, got "+elements.children.size());
+                            var list = elements.children.get(1);
+                            if(list.isTerminal()) throw new SyntaxException("head expected list, got terminal");
+                            else{
+                                // first element should not be buildin function
+                                var firstElem = list.children.get(0);
+                                if(firstElem.data.isIdentifier() && ProgramBuiltin.isBuiltIn((Identifier) firstElem.data)) throw new SyntaxException("head expected sample list without buildin functions");
+                                else return evaluateElement(firstElem, state);
+                            }
+                        }
+                        case "tail": {
+                            if(elements.children.size() != 2) throw new SyntaxException("tail expected 1 element, got "+elements.children.size());
+                            var list = elements.children.get(1);
+                            if(list.isTerminal()) throw new SyntaxException("tail expected list, got terminal");
+                            else {
+                                var evaluatedChildren = new ArrayList<Literal>();
+                                for (int i = 1; i < list.children.size(); i++) {
+                                    evaluatedChildren.add(evaluateElement(list.children.get(i), state));
+                                }
+                                if (evaluatedChildren.isEmpty()) throw new IllegalStateException("Encountered an empty list");
+
+                                var compositeLiteral = new CompositeLiteral(evaluatedChildren);
+                                return compositeLiteral;
+                            }
+                        }
+                    }
+                    return new NumberLiteral(3.0);
+                }
                 else if (ProgramDeclaration.isDeclaration((Identifier) token)) {
                     return ProgramDeclaration.executeUtility((Identifier) token, elements, state);
                 }
@@ -59,18 +87,23 @@ public class ProgramExecution {
                         evaluatedChildren.add(evaluateElement(child, state));
                     }
 
+                    if (evaluatedChildren.isEmpty()) throw new IllegalStateException("Encountered an empty list");
+
                     var compositeLiteral = new CompositeLiteral(evaluatedChildren);
                     return compositeLiteral;
                 }
             }
             else /* if (token.isLiteral())  */{
-                var values = new ArrayList<Literal>();
-                for (int i = 1; i < elements.children.size(); ++i) {
-                    values.add(evaluateElement(elements.children.get(i), state));
+                var evaluatedChildren = new ArrayList<Literal>();
+                for (var child : elements.children) {
+                    evaluatedChildren.add(evaluateElement(child, state));
                 }
-                if (!values.isEmpty()) {
-                    return values.get(values.size() - 1);
-                } else throw new IllegalStateException("Encountered an empty list");
+
+                var compositeLiteral = new CompositeLiteral(evaluatedChildren);
+                if (evaluatedChildren.isEmpty()) throw new IllegalStateException("Encountered an empty list");
+
+                return compositeLiteral;
+
             }
         }
         // TODO: Enhance the code quality
