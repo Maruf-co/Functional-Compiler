@@ -10,6 +10,7 @@ public class ProgramDeclaration {
     static String[] declarations = {
        "setq"
     };
+
     // Checks if it is utility 
     // function
     public static boolean isDeclaration(Identifier identifier) {

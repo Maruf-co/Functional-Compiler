@@ -31,7 +31,7 @@ public class ProgramExecution {
     static Literal evaluateElements(TreeNode elements, ProgramState state) throws IllegalStateException, SyntaxException {
         if (elements.children.isEmpty()) {
             throw new IllegalStateException("Evaluation called with an empty list");
-        } 
+        }
 
         var firstElement = elements.children.get(0);
 
@@ -44,30 +44,35 @@ public class ProgramExecution {
                         values.add(evaluateElement(elements.children.get(i), state));
                     }
                     return ProgramBuiltin.executeBuiltin((Identifier) token, values, state);
-                }
-                else if (ProgramBuiltin.isListOperation((Identifier) token)){
-                    switch(((Identifier) token).getValue()){
+                } else if (ProgramBuiltin.isListOperation((Identifier) token)) {
+                    switch (((Identifier) token).getValue()) {
                         case "head": {
-                            if(elements.children.size() != 2) throw new SyntaxException("head expected 1 element, got "+elements.children.size());
+                            if (elements.children.size() != 2)
+                                throw new SyntaxException("head expected 1 element, got " + elements.children.size());
                             var list = elements.children.get(1);
-                            if(list.isTerminal()) throw new SyntaxException("head expected list, got terminal");
-                            else{
-                                // first element should not be buildin function
-                                var firstElem = list.children.get(0);
-                                if(firstElem.data.isIdentifier() && ProgramBuiltin.isBuiltIn((Identifier) firstElem.data)) throw new SyntaxException("head expected sample list without buildin functions");
-                                else return evaluateElement(firstElem, state);
-                            }
+
+                            if (list.isTerminal()) throw new SyntaxException("head expected list, got terminal");
+
+                            if (list.children.get(0).isTerminal() && list.children.get(0).data.isIdentifier() && (ProgramBuiltin.isBuiltIn((Identifier) list.children.get(0).data) || ProgramBuiltin.isLoop((Identifier) list.children.get(0).data) || ProgramBuiltin.isListOperation((Identifier) list.children.get(0).data) || ProgramDeclaration.isDeclaration((Identifier) list.children.get(0).data)))
+                                throw new SyntaxException("head expected sample list without buildin functions");
+
+
+
+                            return evaluateElement(list.children.get(0), state);
                         }
                         case "tail": {
-                            if(elements.children.size() != 2) throw new SyntaxException("tail expected 1 element, got "+elements.children.size());
+                            if (elements.children.size() != 2)
+                                throw new SyntaxException("tail expected 1 element, got " + elements.children.size());
+
                             var list = elements.children.get(1);
-                            if(list.isTerminal()) throw new SyntaxException("tail expected list, got terminal");
+                            if (list.isTerminal()) throw new SyntaxException("tail expected list, got terminal");
                             else {
                                 var evaluatedChildren = new ArrayList<Literal>();
                                 for (int i = 1; i < list.children.size(); i++) {
                                     evaluatedChildren.add(evaluateElement(list.children.get(i), state));
                                 }
-                                if (evaluatedChildren.isEmpty()) throw new IllegalStateException("Encountered an empty list");
+                                if (evaluatedChildren.isEmpty())
+                                    throw new IllegalStateException("Encountered an empty list");
 
                                 var compositeLiteral = new CompositeLiteral(evaluatedChildren);
                                 return compositeLiteral;
@@ -76,10 +81,23 @@ public class ProgramExecution {
                     }
                     return new NumberLiteral(3.0);
                 }
+                else if(ProgramBuiltin.isLoop((Identifier) token)){
+                    if(elements.children.size() != 3) throw new SyntaxException("while expects two arguments, got "+ elements.children.size());
+
+                    var condition = elements.children.get(1);
+                    var loopBody = elements.children.get(2);
+
+                    if(evaluateElement(condition, state).getLiteralType() != Literal.LiteralType.BOOLEAN) throw new SyntaxException("while expects bool expression in condition statement");
+
+                    while((Boolean) evaluateElement(condition, state).getValue()){
+                        System.out.println("hello");
+                        evaluateElement(loopBody, state);
+                    }
+                    return new NumberLiteral(0.0);
+                }
                 else if (ProgramDeclaration.isDeclaration((Identifier) token)) {
                     return ProgramDeclaration.executeUtility((Identifier) token, elements, state);
-                }
-                else {
+                } else {
                     // TODO: Finish when user-defined
                     // functions are available
                     var evaluatedChildren = new ArrayList<Literal>();
@@ -92,8 +110,7 @@ public class ProgramExecution {
                     var compositeLiteral = new CompositeLiteral(evaluatedChildren);
                     return compositeLiteral;
                 }
-            }
-            else /* if (token.isLiteral())  */{
+            } else /* if (token.isLiteral())  */ {
                 var evaluatedChildren = new ArrayList<Literal>();
                 for (var child : elements.children) {
                     evaluatedChildren.add(evaluateElement(child, state));
