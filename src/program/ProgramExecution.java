@@ -40,11 +40,7 @@ public class ProgramExecution {
             if (token.isIdentifier()) {
                 var identifierToken = (Identifier) token;
                 if (ProgramBuiltin.isBuiltIn(identifierToken)) {
-                    var values = new ArrayList<Literal>();
-                    for (int i = 1; i < elements.children.size(); ++i) {
-                        values.add(evaluateElement(elements.children.get(i), state));
-                    }
-                    return ProgramBuiltin.executeBuiltin(identifierToken, values, state);
+                    return ProgramBuiltin.executeBuiltin(identifierToken, elements, state);
                 } else if (ProgramBuiltin.isListOperation(identifierToken)) {
                     return ProgramBuiltin.executeListOperations(identifierToken, elements, state);
                 } else if (ProgramBuiltin.isLoop((Identifier) token)) {

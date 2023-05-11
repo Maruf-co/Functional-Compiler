@@ -131,7 +131,6 @@ public class ProgramBuiltin {
         return new NumberLiteral(3.0);
     }
 
-    static Literal executeBuiltin(Identifier builtin, ArrayList<Literal> tokens, ProgramState state) throws SyntaxException {
     static ArrayList<Literal> evaluateAllElements(LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
         var values = new ArrayList<Literal>();
         for (int i = 1; i < elements.children.size(); ++i) {
@@ -471,11 +470,11 @@ public class ProgramBuiltin {
 
             }
             case "cond": {
-                if (!(tokens.size() == 3 || tokens.size() == 4)) {
-                    throw new SyntaxException("cond expects three arguments, got " + tokens.size());
+                if (!(elements.children.size() == 3 || elements.children.size() == 4)) {
+                    throw new SyntaxException("cond expects three arguments, got " + elements.children.size());
                 }
 
-                if(tokens.size() == 4){
+                if(elements.children.size() == 4){
                     var condition = evaluateElement(elements.children.get(1), state);
                     var expr1 = elements.children.get(2);
                     var expr2 = elements.children.get(3);
@@ -484,8 +483,8 @@ public class ProgramBuiltin {
                         throw new SyntaxException("cond expects a bool expression");
                     }
 
-                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) evaluateElement(expr1, state);
-                    else evaluateElement(expr2, state);
+                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return evaluateElement(expr1, state);
+                    else return evaluateElement(expr2, state);
                 }
                 else{
                     var condition = evaluateElement(elements.children.get(1), state);
@@ -495,7 +494,7 @@ public class ProgramBuiltin {
                         throw new SyntaxException("cond expects a bool expression");
                     }
 
-                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) evaluateElement(expr1, state);
+                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return evaluateElement(expr1, state);
                     else return new BreakLiteral();
                 }
 
