@@ -2,11 +2,8 @@ package program;
 
 import java.util.ArrayList;
 
-import tokens.Identifier;
-import tokens.Literal;
-import tokens.NumberLiteral;
-import tokens.Token;
-import tokens.BooleanLiteral;
+import syntax.LISPParser;
+import tokens.*;
 
 public class ProgramBuiltin {
     static String[] builtins = {
@@ -32,7 +29,8 @@ public class ProgramBuiltin {
             "xor",
             "not",
             "eval",
-            "cond"
+            "cond",
+            "break"
     };
 
     static String[] listOperations = {"head", "tail"};
@@ -67,6 +65,69 @@ public class ProgramBuiltin {
         }
         return false;
 
+    }
+
+    static Literal executeLoop(LISPParser.TreeNode elements, ProgramState state) throws SyntaxException{
+        if (elements.children.size() != 3)
+            throw new SyntaxException("while expects two arguments, got " + elements.children.size());
+
+        var condition = elements.children.get(1);
+        var bodyElements = elements.children.get(2).children;
+
+        if (ProgramExecution.evaluateElement(condition, state).getLiteralType() != Literal.LiteralType.BOOLEAN)
+            throw new SyntaxException("while expects bool expression in condition statement");
+
+        // да я написала говнокод, но я не спала извените
+        var breakFlag = false;
+        while ((Boolean) ProgramExecution.evaluateElement(condition, state).getValue()) {
+            for (int i = 0; i < bodyElements.size(); i++) {
+                var res = ProgramExecution.evaluateElement(bodyElements.get(i), state);
+                if (res.getLiteralType() == Literal.LiteralType.BREAK) {
+                    breakFlag = true;
+                    break;
+                }
+            }
+            if (breakFlag) break;
+
+        }
+        return new NumberLiteral(0.0);
+    }
+
+    static Literal executeListOperations(Identifier identifierToken, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
+        switch (identifierToken.getValue()) {
+            case "head": {
+                if (elements.children.size() != 2)
+                    throw new SyntaxException("head expected 1 element, got " + elements.children.size());
+                var list = elements.children.get(1);
+
+                if (list.isTerminal()) throw new SyntaxException("head expected list, got terminal");
+
+                if (list.children.get(0).isTerminal() && list.children.get(0).data.isIdentifier() && (ProgramBuiltin.isBuiltIn((Identifier) list.children.get(0).data) || ProgramBuiltin.isLoop((Identifier) list.children.get(0).data) || ProgramBuiltin.isListOperation((Identifier) list.children.get(0).data) || ProgramDeclaration.isDeclaration((Identifier) list.children.get(0).data)))
+                    throw new SyntaxException("head expected sample list without buildin functions");
+
+
+                return ProgramExecution.evaluateElement(list.children.get(0), state);
+            }
+            case "tail": {
+                if (elements.children.size() != 2)
+                    throw new SyntaxException("tail expected 1 element, got " + elements.children.size());
+
+                var list = elements.children.get(1);
+                if (list.isTerminal()) throw new SyntaxException("tail expected list, got terminal");
+                else {
+                    var evaluatedChildren = new ArrayList<Literal>();
+                    for (int i = 1; i < list.children.size(); i++) {
+                        evaluatedChildren.add(ProgramExecution.evaluateElement(list.children.get(i), state));
+                    }
+                    if (evaluatedChildren.isEmpty())
+                        throw new IllegalStateException("Encountered an empty list");
+
+                    var compositeLiteral = new CompositeLiteral(evaluatedChildren);
+                    return compositeLiteral;
+                }
+            }
+        }
+        return new NumberLiteral(3.0);
     }
 
     static Literal executeBuiltin(Identifier builtin, ArrayList<Literal> tokens, ProgramState state) throws SyntaxException {
@@ -386,20 +447,42 @@ public class ProgramBuiltin {
 
             }
             case "cond": {
-                if (tokens.size() != 3){
-                    throw new SyntaxException("cond expects three argument, got " + tokens.size());
+                if (!(tokens.size() == 3 || tokens.size() == 2)) {
+                    throw new SyntaxException("cond expects three arguments, got " + tokens.size());
                 }
 
-                var condition = tokens.get(0);
-                var expr1 = tokens.get(1);
-                var expr2 = tokens.get(2);
+                if(tokens.size() == 3){
+                    var condition = tokens.get(0);
+                    var expr1 = tokens.get(1);
+                    var expr2 = tokens.get(2);
 
-                if(condition.isLiteral() && condition.getLiteralType() != Literal.LiteralType.BOOLEAN){
-                    throw new SyntaxException("cond expects a bool expression");
+                    if (condition.isLiteral() && condition.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                        throw new SyntaxException("cond expects a bool expression");
+                    }
+
+                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return expr1;
+                    else return expr2;
+                }
+                else{
+                    var condition = tokens.get(0);
+                    var expr1 = tokens.get(1);
+
+                    if (condition.isLiteral() && condition.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                        throw new SyntaxException("cond expects a bool expression");
+                    }
+
+                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return expr1;
+                    else return new BreakLiteral();
                 }
 
-                if(condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return expr1;
-                else return expr2;
+
+            }
+            case "break": {
+                if (tokens.size() != 0) {
+                    throw new SyntaxException("break expects zero arguments, got " + tokens.size());
+                }
+
+                return new BreakLiteral();
             }
             default:
                 throw new IllegalStateException("Not a builtin: " + builtin.getValue());
