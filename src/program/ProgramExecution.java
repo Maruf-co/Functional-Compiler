@@ -40,11 +40,7 @@ public class ProgramExecution {
             if (token.isIdentifier()) {
                 var identifierToken = (Identifier) token;
                 if (ProgramBuiltin.isBuiltIn(identifierToken)) {
-                    var values = new ArrayList<Literal>();
-                    for (int i = 1; i < elements.children.size(); ++i) {
-                        values.add(evaluateElement(elements.children.get(i), state));
-                    }
-                    return ProgramBuiltin.executeBuiltin(identifierToken, values, state);
+                    return ProgramBuiltin.executeBuiltin(identifierToken, elements, state);
                 }
                 else if (ProgramBuiltin.isListOperation(identifierToken)){
                     switch(identifierToken.getValue()){
@@ -119,8 +115,6 @@ public class ProgramExecution {
                     }
                     return evaluateElement(function.elements, localState);
                 } else {
-                    // TODO: Finish when user-defined
-                    // functions are available
                     var evaluatedChildren = new ArrayList<Literal>();
                     for (var child : elements.children) {
                         evaluatedChildren.add(evaluateElement(child, state));
@@ -147,7 +141,7 @@ public class ProgramExecution {
         // TODO: Enhance the code quality
         else {
             var values = new ArrayList<Literal>();
-            for (int i = 1; i < elements.children.size(); ++i) {
+            for (int i = 0; i < elements.children.size(); ++i) {
                 values.add(evaluateElement(elements.children.get(i), state));
             }
             if (!values.isEmpty()) {

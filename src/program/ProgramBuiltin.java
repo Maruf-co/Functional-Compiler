@@ -2,11 +2,14 @@ package program;
 
 import java.util.ArrayList;
 
+import syntax.LISPParser;
 import tokens.Identifier;
 import tokens.Literal;
 import tokens.NumberLiteral;
 import tokens.Token;
 import tokens.BooleanLiteral;
+
+import static program.ProgramExecution.evaluateElement;
 
 public class ProgramBuiltin {
     static String[] builtins = {
@@ -69,9 +72,18 @@ public class ProgramBuiltin {
 
     }
 
-    static Literal executeBuiltin(Identifier builtin, ArrayList<Literal> tokens, ProgramState state) throws SyntaxException {
+    static ArrayList<Literal> evaluateAllElements(LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
+        var values = new ArrayList<Literal>();
+        for (int i = 1; i < elements.children.size(); ++i) {
+            values.add(evaluateElement(elements.children.get(i), state));
+        }
+        return values;
+    }
+
+    static Literal executeBuiltin(Identifier builtin, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
         switch (builtin.getValue()) {
             case "plus": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("plus expects two arguments, got " + tokens.size());
                 }
@@ -96,6 +108,7 @@ public class ProgramBuiltin {
                 );
             }
             case "minus": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("minus expects two arguments, got " + tokens.size());
                 }
@@ -120,6 +133,7 @@ public class ProgramBuiltin {
                 );
             }
             case "divide": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("divide expects two arguments, got " + tokens.size());
                 }
@@ -144,6 +158,7 @@ public class ProgramBuiltin {
                 );
             }
             case "times": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("times expects two arguments, got " + tokens.size());
                 }
@@ -178,6 +193,7 @@ public class ProgramBuiltin {
                 // FIXME
             }
             case "equal": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("equal expects two arguments, got " + tokens.size());
                 }
@@ -199,6 +215,7 @@ public class ProgramBuiltin {
                 );
             }
             case "nonequal": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("nonequal expects two arguments, got " + tokens.size());
                 }
@@ -219,6 +236,7 @@ public class ProgramBuiltin {
                 );
             }
             case "less": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("less expects two arguments, got " + tokens.size());
                 }
@@ -247,6 +265,7 @@ public class ProgramBuiltin {
 
             }
             case "lesseq": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("lesseq expects two arguments, got " + tokens.size());
                 }
@@ -274,6 +293,7 @@ public class ProgramBuiltin {
 
             }
             case "greater": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("greater expects two arguments, got " + tokens.size());
                 }
@@ -300,6 +320,7 @@ public class ProgramBuiltin {
                 }
             }
             case "greatereq": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("greatereq expects two arguments, got " + tokens.size());
                 }
@@ -326,6 +347,7 @@ public class ProgramBuiltin {
                 }
             }
             case "and": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("and expects two arguments, got " + tokens.size());
                 }
@@ -343,6 +365,7 @@ public class ProgramBuiltin {
 
             }
             case "or": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("or expects two arguments, got " + tokens.size());
                 }
@@ -359,6 +382,7 @@ public class ProgramBuiltin {
                 );
             }
             case "xor": {
+                var tokens = evaluateAllElements(elements, state);
                 var token_one = tokens.get(0);
                 var token_two = tokens.get(1);
 
@@ -372,6 +396,7 @@ public class ProgramBuiltin {
                 );
             }
             case "not": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 1) {
                     throw new SyntaxException("not expects one argument, got " + tokens.size());
                 }
@@ -386,20 +411,20 @@ public class ProgramBuiltin {
 
             }
             case "cond": {
-                if (tokens.size() != 3){
-                    throw new SyntaxException("cond expects three argument, got " + tokens.size());
+                if (elements.children.size() != 4){
+                    throw new SyntaxException("cond expects three argument, got " + elements.children.size());
                 }
 
-                var condition = tokens.get(0);
-                var expr1 = tokens.get(1);
-                var expr2 = tokens.get(2);
+                var condition = evaluateElement(elements.children.get(1), state);
+                var expr1 = elements.children.get(2);
+                var expr2 = elements.children.get(3);
 
                 if(condition.isLiteral() && condition.getLiteralType() != Literal.LiteralType.BOOLEAN){
                     throw new SyntaxException("cond expects a bool expression");
                 }
 
-                if(condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return expr1;
-                else return expr2;
+                if(condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return evaluateElement(expr1, state);
+                else return evaluateElement(expr2, state);
             }
             default:
                 throw new IllegalStateException("Not a builtin: " + builtin.getValue());

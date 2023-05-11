@@ -1,3 +1,4 @@
+(func Recurs (a) (cond (less a 109) ((setq a (plus a 33)) (Recurs a)) a))
 (setq a 0)
-(while (less a 5) (setq a (plus a 1)))
+(Recurs a)
 a
