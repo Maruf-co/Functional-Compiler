@@ -14,7 +14,10 @@ import tokens.Literal;
 public class ProgramState {
 
     public ProgramState withVariables(List<Variable> variables) {
-        this.variables = new ArrayList<>(variables);
+        this.variables = new ArrayList<>();
+        for (var variable : variables) {
+            this.variables.add(new Variable(variable.identifier, variable.value));
+        }
         return this;
     }
 

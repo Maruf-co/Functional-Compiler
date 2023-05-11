@@ -8,6 +8,9 @@ import tokens.Identifier;
 import tokens.Literal;
 import tokens.UnitLiteral;
 
+import static program.ProgramExecution.evaluateElement;
+import static program.ProgramExecution.evaluateElementInLocalContext;
+
 public class ProgramDeclaration {
     static String[] declarations = {
        "setq", "func"
@@ -24,7 +27,7 @@ public class ProgramDeclaration {
     }
 
     public static Literal setq(TreeNode node, ProgramState state) throws SyntaxException {
-        Literal variableValue = ProgramExecution.evaluateElement(node.children.get(2), state);
+        Literal variableValue = evaluateElement(node.children.get(2), state);
         if (node.children.get(1).isTerminal()) {
             Identifier variableName = (Identifier) node.children.get(1).data;
             state.setValue(variableName, variableValue);
@@ -53,9 +56,27 @@ public class ProgramDeclaration {
         }
     }
 
+    public static Literal executeFunction(Identifier identifier, TreeNode node, ProgramState state) throws SyntaxException {
+        ProgramState.Function function = state.getFunction(identifier);
+
+        var values = new ArrayList<Literal>();
+        for (int i = 1; i < node.children.size(); ++i) {
+            values.add(evaluateElement(node.children.get(i), state));
+        }
+        if (values.size() != function.arguments.size()) {
+            throw new SyntaxException("Function requires " + function.arguments.size() + " arguments");
+        }
+
+        var localState = new ProgramState()
+                .withVariables(state.variables)
+                .withFunctions(state.functions);
+        for (int i = 0; i < values.size(); i++) {
+            localState.setValue(function.arguments.get(i), values.get(i));
+        }
+        return evaluateElementInLocalContext(function.elements, localState);
+    }
+
     // Executes the utility function
-    // Что значит ютилити
-    // Все понятно вводим код ревью отныне
     public static Literal executeUtility(Identifier utility, TreeNode node, ProgramState state) throws SyntaxException {
         switch (utility.getValue()) {
             case "setq": {

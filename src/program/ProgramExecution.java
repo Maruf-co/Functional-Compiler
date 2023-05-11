@@ -15,6 +15,7 @@ public class ProgramExecution {
         }
     }
 
+
     static Literal evaluateElement(TreeNode element, ProgramState state) throws IllegalStateException, SyntaxException {
         if (element.isTerminal()) {
             var token = element.data;
@@ -26,6 +27,11 @@ public class ProgramExecution {
         } else {
             return evaluateElements(element, state);
         }
+    }
+
+    static Literal evaluateElementInLocalContext(TreeNode element, ProgramState state) throws IllegalStateException, SyntaxException {
+        var result = evaluateElement(element, state);
+        return result.getLiteralType() == Literal.LiteralType.RETURN ? ((ReturnLiteral) result).getValue() : result;
     }
 
     static Literal evaluateElements(TreeNode elements, ProgramState state) throws IllegalStateException, SyntaxException {
@@ -48,23 +54,7 @@ public class ProgramExecution {
                 } else if (ProgramDeclaration.isDeclaration(identifierToken)) {
                     return ProgramDeclaration.executeUtility(identifierToken, elements, state);
                 } else if (state.isFunctionDefined(identifierToken)) {
-                    ProgramState.Function function = state.getFunction(identifierToken);
-
-                    var values = new ArrayList<Literal>();
-                    for (int i = 1; i < elements.children.size(); ++i) {
-                        values.add(evaluateElement(elements.children.get(i), state));
-                    }
-                    if (values.size() != function.arguments.size()) {
-                        throw new SyntaxException("Function requires " + function.arguments.size() + " arguments");
-                    }
-
-                    var localState = new ProgramState()
-                            .withVariables(state.variables)
-                            .withFunctions(state.functions);
-                    for (int i = 0; i < values.size(); i++) {
-                        localState.setValue(function.arguments.get(i), values.get(i));
-                    }
-                    return evaluateElement(function.elements, localState);
+                   return ProgramDeclaration.executeFunction(identifierToken, elements, state);
                 } else {
                     var evaluatedChildren = new ArrayList<Literal>();
                     for (var child : elements.children) {
@@ -93,7 +83,11 @@ public class ProgramExecution {
         else {
             var values = new ArrayList<Literal>();
             for (int i = 0; i < elements.children.size(); ++i) {
-                values.add(evaluateElement(elements.children.get(i), state));
+                var evaluationResult = evaluateElement(elements.children.get(i), state);
+                if (evaluationResult instanceof ReturnLiteral) {
+                    return evaluationResult;
+                }
+                values.add(evaluationResult);
             }
             if (!values.isEmpty()) {
                 return values.get(values.size() - 1);
@@ -105,7 +99,11 @@ public class ProgramExecution {
     static public Literal execute(TreeNode node, ProgramState state) throws IllegalStateException, SyntaxException {
         var results = new ArrayList<Literal>();
         for (var child : node.children) {
-            results.add(evaluateElement(child, state));
+            var evaluationResult = evaluateElement(child, state);
+            if (evaluationResult instanceof ReturnLiteral) {
+                return evaluationResult;
+            }
+            results.add(evaluationResult);
         }
         return results.get(results.size() - 1);
     }

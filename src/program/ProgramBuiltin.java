@@ -31,7 +31,8 @@ public class ProgramBuiltin {
             "xor",
             "not",
             "eval",
-            "cond"
+            "cond",
+            "return"
     };
 
     static String[] listOperations = {"head", "tail"};
@@ -499,6 +500,13 @@ public class ProgramBuiltin {
                 }
 
 
+            }
+            case "return": {
+                var tokens = evaluateAllElements(elements, state);
+                if (tokens.size() != 1) {
+                    throw new SyntaxException("return expects one argument, got " + tokens.size());
+                }
+                return new ReturnLiteral(tokens.get(0));
             }
             default:
                 throw new IllegalStateException("Not a builtin: " + builtin.getValue());
