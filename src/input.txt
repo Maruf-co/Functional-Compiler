@@ -1,3 +1,5 @@
-(setq a 10)
-(setq b 15)
-(cond false a )
+(func RetFun (a) ((cond (less a 5)
+                        (return (plus a -5))
+                        (setq a (plus a -10)))
+                   (RetFun a)))
+(RetFun 100)
