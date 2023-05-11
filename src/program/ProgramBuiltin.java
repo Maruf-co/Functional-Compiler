@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import syntax.LISPParser;
 import tokens.*;
 
+import static program.ProgramExecution.evaluateElement;
+
 public class ProgramBuiltin {
     static String[] builtins = {
             "plus",
@@ -29,8 +31,7 @@ public class ProgramBuiltin {
             "xor",
             "not",
             "eval",
-            "cond",
-            "break"
+            "cond"
     };
 
     static String[] listOperations = {"head", "tail"};
@@ -131,8 +132,18 @@ public class ProgramBuiltin {
     }
 
     static Literal executeBuiltin(Identifier builtin, ArrayList<Literal> tokens, ProgramState state) throws SyntaxException {
+    static ArrayList<Literal> evaluateAllElements(LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
+        var values = new ArrayList<Literal>();
+        for (int i = 1; i < elements.children.size(); ++i) {
+            values.add(evaluateElement(elements.children.get(i), state));
+        }
+        return values;
+    }
+
+    static Literal executeBuiltin(Identifier builtin, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
         switch (builtin.getValue()) {
             case "plus": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("plus expects two arguments, got " + tokens.size());
                 }
@@ -157,6 +168,7 @@ public class ProgramBuiltin {
                 );
             }
             case "minus": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("minus expects two arguments, got " + tokens.size());
                 }
@@ -181,6 +193,7 @@ public class ProgramBuiltin {
                 );
             }
             case "divide": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("divide expects two arguments, got " + tokens.size());
                 }
@@ -205,6 +218,7 @@ public class ProgramBuiltin {
                 );
             }
             case "times": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("times expects two arguments, got " + tokens.size());
                 }
@@ -239,6 +253,7 @@ public class ProgramBuiltin {
                 // FIXME
             }
             case "equal": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("equal expects two arguments, got " + tokens.size());
                 }
@@ -260,6 +275,7 @@ public class ProgramBuiltin {
                 );
             }
             case "nonequal": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("nonequal expects two arguments, got " + tokens.size());
                 }
@@ -280,6 +296,7 @@ public class ProgramBuiltin {
                 );
             }
             case "less": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("less expects two arguments, got " + tokens.size());
                 }
@@ -308,6 +325,7 @@ public class ProgramBuiltin {
 
             }
             case "lesseq": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("lesseq expects two arguments, got " + tokens.size());
                 }
@@ -335,6 +353,7 @@ public class ProgramBuiltin {
 
             }
             case "greater": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("greater expects two arguments, got " + tokens.size());
                 }
@@ -361,6 +380,7 @@ public class ProgramBuiltin {
                 }
             }
             case "greatereq": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("greatereq expects two arguments, got " + tokens.size());
                 }
@@ -387,6 +407,7 @@ public class ProgramBuiltin {
                 }
             }
             case "and": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("and expects two arguments, got " + tokens.size());
                 }
@@ -404,6 +425,7 @@ public class ProgramBuiltin {
 
             }
             case "or": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 2) {
                     throw new SyntaxException("or expects two arguments, got " + tokens.size());
                 }
@@ -420,6 +442,7 @@ public class ProgramBuiltin {
                 );
             }
             case "xor": {
+                var tokens = evaluateAllElements(elements, state);
                 var token_one = tokens.get(0);
                 var token_two = tokens.get(1);
 
@@ -433,6 +456,7 @@ public class ProgramBuiltin {
                 );
             }
             case "not": {
+                var tokens = evaluateAllElements(elements, state);
                 if (tokens.size() != 1) {
                     throw new SyntaxException("not expects one argument, got " + tokens.size());
                 }
@@ -447,42 +471,35 @@ public class ProgramBuiltin {
 
             }
             case "cond": {
-                if (!(tokens.size() == 3 || tokens.size() == 2)) {
+                if (!(tokens.size() == 3 || tokens.size() == 4)) {
                     throw new SyntaxException("cond expects three arguments, got " + tokens.size());
                 }
 
-                if(tokens.size() == 3){
-                    var condition = tokens.get(0);
-                    var expr1 = tokens.get(1);
-                    var expr2 = tokens.get(2);
+                if(tokens.size() == 4){
+                    var condition = evaluateElement(elements.children.get(1), state);
+                    var expr1 = elements.children.get(2);
+                    var expr2 = elements.children.get(3);
 
                     if (condition.isLiteral() && condition.getLiteralType() != Literal.LiteralType.BOOLEAN) {
                         throw new SyntaxException("cond expects a bool expression");
                     }
 
-                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return expr1;
-                    else return expr2;
+                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) evaluateElement(expr1, state);
+                    else evaluateElement(expr2, state);
                 }
                 else{
-                    var condition = tokens.get(0);
-                    var expr1 = tokens.get(1);
+                    var condition = evaluateElement(elements.children.get(1), state);
+                    var expr1 = elements.children.get(2);
 
                     if (condition.isLiteral() && condition.getLiteralType() != Literal.LiteralType.BOOLEAN) {
                         throw new SyntaxException("cond expects a bool expression");
                     }
 
-                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return expr1;
+                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) evaluateElement(expr1, state);
                     else return new BreakLiteral();
                 }
 
 
-            }
-            case "break": {
-                if (tokens.size() != 0) {
-                    throw new SyntaxException("break expects zero arguments, got " + tokens.size());
-                }
-
-                return new BreakLiteral();
             }
             default:
                 throw new IllegalStateException("Not a builtin: " + builtin.getValue());
