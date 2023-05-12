@@ -32,7 +32,8 @@ public class ProgramBuiltin {
             "not",
             "eval",
             "cond",
-            "return"
+            "return",
+            "break"
     };
 
     static String[] listOperations = {"head", "tail"};
@@ -241,16 +242,6 @@ public class ProgramBuiltin {
                 return new NumberLiteral(
                         ((NumberLiteral) tokens.get(0)).getValue() * ((NumberLiteral) tokens.get(1)).getValue()
                 );
-            }
-            case "head": {
-                // var head = tokens.get(0);
-
-            }
-            case "tail": {
-                // FIXME
-            }
-            case "cons": {
-                // FIXME
             }
             case "equal": {
                 var tokens = evaluateAllElements(elements, state);
@@ -496,7 +487,7 @@ public class ProgramBuiltin {
                     }
 
                     if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return evaluateElement(expr1, state);
-                    else return new BreakLiteral();
+                    else return new UnitLiteral();
                 }
 
 
@@ -507,6 +498,13 @@ public class ProgramBuiltin {
                     throw new SyntaxException("return expects one argument, got " + tokens.size());
                 }
                 return new ReturnLiteral(tokens.get(0));
+            }
+            case "break": {
+                var tokens = evaluateAllElements(elements, state);
+                if (tokens.size() != 0) {
+                    throw new SyntaxException("break expects zero arguments, got " + tokens.size());
+                }
+                return new BreakLiteral();
             }
             default:
                 throw new IllegalStateException("Not a builtin: " + builtin.getValue());

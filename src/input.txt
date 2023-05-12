@@ -1,5 +1,17 @@
-(func RetFun (a) ((cond (less a 5)
-                        (return (plus a -5))
-                        (setq a (plus a -10)))
-                   (RetFun a)))
-(RetFun 100)
+(func makeList (A) (A))
+(func sqrt (n) (
+  (setq x 1)
+  (setq nx (divide (plus x (divide n x)) 2))
+  (while true
+    (
+  (setq nx (divide (plus x (divide n x)) 2))
+  (cond (and
+        (less (minus x nx) 0.0005)
+        (greater (minus x nx) -0.0005))
+    (break)
+    (setq x nx)
+    )
+   ))
+  (return x)
+))
+(sqrt 2)
