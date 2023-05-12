@@ -3,7 +3,6 @@
 package syntax;
 
 import tokens.*;
-import java.util.ArrayList;
 
 /**
     Lexer class to parse the input program into comprehensive 
@@ -651,7 +650,7 @@ public final class Yylex {
             // fall through
           case 29: break;
           case 15: 
-            { return capture(new BooleanLiteral(yytext()));
+            { return capture(new BooleanLiteralToken(yytext()));
             } 
             // fall through
           case 30: break;

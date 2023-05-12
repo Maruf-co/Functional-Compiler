@@ -37,15 +37,11 @@
 /* "syntax/syntax.y":10  */
 
     package syntax;
-  import java.io.InputStream;
-  import java.io.InputStreamReader;
   import java.io.Reader;
   import java.util.List;
   import java.util.LinkedList;
   import java.io.IOException;
-  import java.io.FileReader;
-  import java.io.FileWriter;
-  import syntax.Yylex;
+
   import tokens.*;
 
 /* "syntax/LISPParser.java":52  */
@@ -989,7 +985,7 @@ public static class LISPLexer implements LISPParser.Lexer {
         return LISPParser.Lexer.LeftBracket;
     } else if (token instanceof RightBracket) {
         return LISPParser.Lexer.RightBracket;
-    } else if (token instanceof Literal) {
+    } else if (token instanceof LiteralToken) {
         return LISPParser.Lexer.Literal;
     } 
     return 0;

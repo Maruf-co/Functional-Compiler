@@ -2,11 +2,11 @@ package tokens;
 
 import java.util.ArrayList;
 
-public class CompositeLiteral extends Literal {
+public class CompositeLiteral extends LiteralToken {
 
-    public ArrayList<Literal> literals = new ArrayList<>();
+    public ArrayList<LiteralToken> literals = new ArrayList<>();
 
-    public CompositeLiteral(ArrayList<Literal> value) {
+    public CompositeLiteral(ArrayList<LiteralToken> value) {
         super();
         this.literals = value;
     }
@@ -17,7 +17,7 @@ public class CompositeLiteral extends Literal {
     }
 
     @Override
-    public ArrayList<Literal> getValue() {
+    public ArrayList<LiteralToken> getValue() {
         return this.literals;
     }
 }

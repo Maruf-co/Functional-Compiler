@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import com.sun.source.tree.Tree;
 import syntax.LISPParser;
 import tokens.Identifier;
-import tokens.Literal;
+import tokens.LiteralToken;
 
 public class ProgramState {
 
@@ -30,21 +28,19 @@ public class ProgramState {
     // and their values
     static class Variable {
         Identifier identifier;
-        Literal value;
+        LiteralToken value;
 
-        Variable(Identifier identifier, Literal value) {
+        Variable(Identifier identifier, LiteralToken value) {
             this.identifier = identifier;
             this.value = value;
         }
     }
 
     static class Function {
-        Identifier identifier;
         List<Identifier> arguments;
         LISPParser.TreeNode elements;
 
-        Function(Identifier identifier, List<Identifier> arguments, LISPParser.TreeNode elements) {
-            this.identifier = identifier;
+        Function(List<Identifier> arguments, LISPParser.TreeNode elements) {
             this.arguments = arguments;
             this.elements = elements;
         }
@@ -52,22 +48,15 @@ public class ProgramState {
 
     // Map of all the variables
     // and their values
-    ArrayList<Variable> variables = new ArrayList<>();
-
-    HashMap<String, Function> functions = new HashMap<>();
+    HashMap<String, LiteralToken> variables = new HashMap<>();
 
     // Checks if a variable is defined
     boolean isDefined(Identifier identifier) {
-        for (var variable : variables) {
-            if (variable.identifier.getValue().equals(identifier.getValue())) {
-                return true;
-            }
-        }
-        return false;
+        return variables.containsKey(identifier);
     }
 
     // Gets the value of a variable
-    Literal getValue(Identifier identifier) {
+    LiteralToken getValue(Identifier identifier) {
         for (var variable : variables) {
             if (variable.identifier.getValue().equals(identifier.getValue())) {
                 return variable.value;
@@ -77,7 +66,7 @@ public class ProgramState {
     }
 
     // Sets the value of a variable
-    void setValue(Identifier identifier, Literal value) {
+    void setValue(Identifier identifier, LiteralToken value) {
         for (var variable : variables) {
             if (variable.identifier.getValue().equals(identifier.getValue())) {
                 variable.value = value;

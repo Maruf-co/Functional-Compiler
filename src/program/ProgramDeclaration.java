@@ -1,11 +1,10 @@
 package program;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import syntax.LISPParser.TreeNode;
 import tokens.Identifier;
-import tokens.Literal;
+import tokens.LiteralToken;
 import tokens.UnitLiteral;
 
 import static program.ProgramExecution.evaluateElement;
@@ -26,8 +25,8 @@ public class ProgramDeclaration {
         } return false;
     }
 
-    public static Literal setq(TreeNode node, ProgramState state) throws SyntaxException {
-        Literal variableValue = evaluateElement(node.children.get(2), state);
+    public static LiteralToken setq(TreeNode node, ProgramState state) throws SyntaxException {
+        LiteralToken variableValue = evaluateElement(node.children.get(2), state);
         if (node.children.get(1).isTerminal()) {
             Identifier variableName = (Identifier) node.children.get(1).data;
             state.setValue(variableName, variableValue);
@@ -37,7 +36,7 @@ public class ProgramDeclaration {
         }
     }
 
-    public static Literal func(TreeNode node, ProgramState state) throws SyntaxException {
+    public static LiteralToken func(TreeNode node, ProgramState state) throws SyntaxException {
         var arguments = new ArrayList<Identifier>();
         for (var argument : node.children.get(2).children) {
             if (!argument.isTerminal()) {
@@ -56,10 +55,10 @@ public class ProgramDeclaration {
         }
     }
 
-    public static Literal executeFunction(Identifier identifier, TreeNode node, ProgramState state) throws SyntaxException {
+    public static LiteralToken executeFunction(Identifier identifier, TreeNode node, ProgramState state) throws SyntaxException {
         ProgramState.Function function = state.getFunction(identifier);
 
-        var values = new ArrayList<Literal>();
+        var values = new ArrayList<LiteralToken>();
         for (int i = 1; i < node.children.size(); ++i) {
             values.add(evaluateElement(node.children.get(i), state));
         }
@@ -77,7 +76,7 @@ public class ProgramDeclaration {
     }
 
     // Executes the utility function
-    public static Literal executeUtility(Identifier utility, TreeNode node, ProgramState state) throws SyntaxException {
+    public static LiteralToken executeUtility(Identifier utility, TreeNode node, ProgramState state) throws SyntaxException {
         switch (utility.getValue()) {
             case "setq": {
                 return setq(node, state);

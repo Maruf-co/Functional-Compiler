@@ -1,6 +1,6 @@
 package tokens;
 
-public class StringLiteral extends tokens.Literal {
+public class StringLiteral extends LiteralToken {
 
     private String literalValue;
 
@@ -16,6 +16,6 @@ public class StringLiteral extends tokens.Literal {
 
     @Override
     public LiteralType getLiteralType() {
-        return tokens.Literal.LiteralType.STRING;
+        return LiteralToken.LiteralType.STRING;
     }
 }

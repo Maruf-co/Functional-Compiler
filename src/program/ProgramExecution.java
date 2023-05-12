@@ -7,7 +7,7 @@ import tokens.*;
 
 public class ProgramExecution {
 
-    static Literal evaluateIdentifier(Identifier identifier, ProgramState state) throws SyntaxException {
+    static LiteralToken evaluateIdentifier(Identifier identifier, ProgramState state) throws SyntaxException {
         if (state.isDefined(identifier)) {
             return state.getValue(identifier);
         } else {
@@ -16,25 +16,25 @@ public class ProgramExecution {
     }
 
 
-    static Literal evaluateElement(TreeNode element, ProgramState state) throws IllegalStateException, SyntaxException {
+    static LiteralToken evaluateElement(TreeNode element, ProgramState state) throws IllegalStateException, SyntaxException {
         if (element.isTerminal()) {
             var token = element.data;
             if (token.isIdentifier()) {
                 return evaluateIdentifier((Identifier) token, state);
             } else {
-                return (Literal) token;
+                return (LiteralToken) token;
             }
         } else {
             return evaluateElements(element, state);
         }
     }
 
-    static Literal evaluateElementInLocalContext(TreeNode element, ProgramState state) throws IllegalStateException, SyntaxException {
+    static LiteralToken evaluateElementInLocalContext(TreeNode element, ProgramState state) throws IllegalStateException, SyntaxException {
         var result = evaluateElement(element, state);
-        return result.getLiteralType() == Literal.LiteralType.RETURN ? ((ReturnLiteral) result).getValue() : result;
+        return result.getLiteralType() == LiteralToken.LiteralType.RETURN ? ((ReturnLiteral) result).getValue() : result;
     }
 
-    static Literal evaluateElements(TreeNode elements, ProgramState state) throws IllegalStateException, SyntaxException {
+    static LiteralToken evaluateElements(TreeNode elements, ProgramState state) throws IllegalStateException, SyntaxException {
         if (elements.children.isEmpty()) {
             throw new IllegalStateException("Evaluation called with an empty list");
         }
@@ -56,7 +56,7 @@ public class ProgramExecution {
                 } else if (state.isFunctionDefined(identifierToken)) {
                    return ProgramDeclaration.executeFunction(identifierToken, elements, state);
                 } else {
-                    var evaluatedChildren = new ArrayList<Literal>();
+                    var evaluatedChildren = new ArrayList<LiteralToken>();
                     for (var child : elements.children) {
                         evaluatedChildren.add(evaluateElement(child, state));
                     }
@@ -67,7 +67,7 @@ public class ProgramExecution {
                     return compositeLiteral;
                 }
             } else /* if (token.isLiteral())  */ {
-                var evaluatedChildren = new ArrayList<Literal>();
+                var evaluatedChildren = new ArrayList<LiteralToken>();
                 for (var child : elements.children) {
                     evaluatedChildren.add(evaluateElement(child, state));
                 }
@@ -81,7 +81,7 @@ public class ProgramExecution {
         }
         // TODO: Enhance the code quality
         else {
-            var values = new ArrayList<Literal>();
+            var values = new ArrayList<LiteralToken>();
             for (int i = 0; i < elements.children.size(); ++i) {
                 var evaluationResult = evaluateElement(elements.children.get(i), state);
                 if (evaluationResult instanceof ReturnLiteral) {
@@ -96,8 +96,8 @@ public class ProgramExecution {
         }
     }
 
-    static public Literal execute(TreeNode node, ProgramState state) throws IllegalStateException, SyntaxException {
-        var results = new ArrayList<Literal>();
+    static public LiteralToken execute(TreeNode node, ProgramState state) throws IllegalStateException, SyntaxException {
+        var results = new ArrayList<LiteralToken>();
         for (var child : node.children) {
             var evaluationResult = evaluateElement(child, state);
             if (evaluationResult instanceof ReturnLiteral) {

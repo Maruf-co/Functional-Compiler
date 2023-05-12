@@ -1,15 +1,15 @@
 package tokens;
 
-public class BooleanLiteral extends tokens.Literal {
+public class BooleanLiteralToken extends LiteralToken {
 
     private Boolean literalValue;
 
-    public BooleanLiteral(String rawString) {
+    public BooleanLiteralToken(String rawString) {
         super(rawString);
         this.literalValue = (rawString.equals("true"));
     }
 
-    public BooleanLiteral(Boolean literalValue) {
+    public BooleanLiteralToken(Boolean literalValue) {
         super();
         this.literalValue = literalValue;
     }
@@ -22,6 +22,6 @@ public class BooleanLiteral extends tokens.Literal {
 
     @Override
     public LiteralType getLiteralType() {
-        return tokens.Literal.LiteralType.BOOLEAN;
+        return LiteralToken.LiteralType.BOOLEAN;
     }
 }

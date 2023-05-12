@@ -14,4 +14,4 @@
    ))
   (return x)
 ))
-(sqrt 2)
+(setq 'a)

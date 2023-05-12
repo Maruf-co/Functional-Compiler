@@ -1,6 +1,6 @@
 package tokens;
 
-public class NumberLiteral extends tokens.Literal {
+public class NumberLiteral extends LiteralToken {
 
     private Double literalValue;
 
@@ -14,10 +14,10 @@ public class NumberLiteral extends tokens.Literal {
         this.literalValue = value;
     }
 
-    public NumberLiteral(Literal value) {
+    public NumberLiteral(LiteralToken value) {
         super(value.toString());
         if (value.getLiteralType() == LiteralType.BOOLEAN) {
-            this.literalValue = ((BooleanLiteral) value).getValue() ? 0. : 1.;
+            this.literalValue = ((BooleanLiteralToken) value).getValue() ? 0. : 1.;
         } else {
             this.literalValue = ((NumberLiteral) value).getValue();
         }
@@ -31,6 +31,6 @@ public class NumberLiteral extends tokens.Literal {
 
     @Override
     public LiteralType getLiteralType() {
-        return tokens.Literal.LiteralType.NUMBER;
+        return LiteralToken.LiteralType.NUMBER;
     }
 }

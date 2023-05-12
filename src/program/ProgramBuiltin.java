@@ -70,14 +70,14 @@ public class ProgramBuiltin {
 
     }
 
-    static Literal executeLoop(LISPParser.TreeNode elements, ProgramState state) throws SyntaxException{
+    static LiteralToken executeLoop(LISPParser.TreeNode elements, ProgramState state) throws SyntaxException{
         if (elements.children.size() != 3)
             throw new SyntaxException("while expects two arguments, got " + elements.children.size());
 
         var condition = elements.children.get(1);
         var bodyElements = elements.children.get(2).children;
 
-        if (ProgramExecution.evaluateElement(condition, state).getLiteralType() != Literal.LiteralType.BOOLEAN)
+        if (ProgramExecution.evaluateElement(condition, state).getLiteralType() != LiteralToken.LiteralType.BOOLEAN)
             throw new SyntaxException("while expects bool expression in condition statement");
 
         // да я написала говнокод, но я не спала извените
@@ -85,7 +85,7 @@ public class ProgramBuiltin {
         while ((Boolean) ProgramExecution.evaluateElement(condition, state).getValue()) {
             for (int i = 0; i < bodyElements.size(); i++) {
                 var res = ProgramExecution.evaluateElement(bodyElements.get(i), state);
-                if (res.getLiteralType() == Literal.LiteralType.BREAK) {
+                if (res.getLiteralType() == LiteralToken.LiteralType.BREAK) {
                     breakFlag = true;
                     break;
                 }
@@ -96,7 +96,7 @@ public class ProgramBuiltin {
         return new NumberLiteral(0.0);
     }
 
-    static Literal executeListOperations(Identifier identifierToken, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
+    static LiteralToken executeListOperations(Identifier identifierToken, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
         switch (identifierToken.getValue()) {
             case "head": {
                 if (elements.children.size() != 2)
@@ -118,7 +118,7 @@ public class ProgramBuiltin {
                 var list = elements.children.get(1);
                 if (list.isTerminal()) throw new SyntaxException("tail expected list, got terminal");
                 else {
-                    var evaluatedChildren = new ArrayList<Literal>();
+                    var evaluatedChildren = new ArrayList<LiteralToken>();
                     for (int i = 1; i < list.children.size(); i++) {
                         evaluatedChildren.add(ProgramExecution.evaluateElement(list.children.get(i), state));
                     }
@@ -133,15 +133,15 @@ public class ProgramBuiltin {
         return new NumberLiteral(3.0);
     }
 
-    static ArrayList<Literal> evaluateAllElements(LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
-        var values = new ArrayList<Literal>();
+    static ArrayList<LiteralToken> evaluateAllElements(LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
+        var values = new ArrayList<LiteralToken>();
         for (int i = 1; i < elements.children.size(); ++i) {
             values.add(evaluateElement(elements.children.get(i), state));
         }
         return values;
     }
 
-    static Literal executeBuiltin(Identifier builtin, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
+    static LiteralToken executeBuiltin(Identifier builtin, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
         switch (builtin.getValue()) {
             case "plus": {
                 var tokens = evaluateAllElements(elements, state);
@@ -151,8 +151,8 @@ public class ProgramBuiltin {
                 for (int i = 0; i < tokens.size(); i++) {
                     var token = tokens.get(i);
                     if (token.isLiteral()) {
-                        var literal = (Literal) token;
-                        if (literal.getLiteralType() != Literal.LiteralType.NUMBER) {
+                        var literal = (LiteralToken) token;
+                        if (literal.getLiteralType() != LiteralToken.LiteralType.NUMBER) {
                             // throw a syntax error reporting the
                             // index of incorrect argument
                             throw new SyntaxException("plus expects a number at index " + i);
@@ -176,8 +176,8 @@ public class ProgramBuiltin {
                 for (int i = 0; i < tokens.size(); i++) {
                     var token = tokens.get(i);
                     if (token.isLiteral()) {
-                        var literal = (Literal) token;
-                        if (literal.getLiteralType() != Literal.LiteralType.NUMBER) {
+                        var literal = (LiteralToken) token;
+                        if (literal.getLiteralType() != LiteralToken.LiteralType.NUMBER) {
                             // throw a syntax error reporting the
                             // index of incorrect argument
                             throw new SyntaxException("minus expects a number at index " + i);
@@ -201,8 +201,8 @@ public class ProgramBuiltin {
                 for (int i = 0; i < tokens.size(); i++) {
                     var token = tokens.get(i);
                     if (token.isLiteral()) {
-                        var literal = (Literal) token;
-                        if (literal.getLiteralType() != Literal.LiteralType.NUMBER) {
+                        var literal = (LiteralToken) token;
+                        if (literal.getLiteralType() != LiteralToken.LiteralType.NUMBER) {
                             // throw a syntax error reporting the
                             // index of incorrect argument
                             throw new SyntaxException("divide expects a number at index " + i);
@@ -226,8 +226,8 @@ public class ProgramBuiltin {
                 for (int i = 0; i < tokens.size(); i++) {
                     var token = tokens.get(i);
                     if (token.isLiteral()) {
-                        var literal = (Literal) token;
-                        if (literal.getLiteralType() != Literal.LiteralType.NUMBER) {
+                        var literal = (LiteralToken) token;
+                        if (literal.getLiteralType() != LiteralToken.LiteralType.NUMBER) {
                             // throw a syntax error reporting the
                             // index of incorrect argument
                             throw new SyntaxException("times expects a number at index " + i);
@@ -251,7 +251,7 @@ public class ProgramBuiltin {
 
                 var literal_one = tokens.get(0);
                 var literal_two = tokens.get(1);
-                if ((literal_one.getLiteralType() == Literal.LiteralType.STRING) && (literal_two.getLiteralType() == Literal.LiteralType.STRING)) {
+                if ((literal_one.getLiteralType() == LiteralToken.LiteralType.STRING) && (literal_two.getLiteralType() == LiteralToken.LiteralType.STRING)) {
                     // throw a syntax error 
                     throw new SyntaxException("equal expects a number or a boolean parameters ");
                 }
@@ -261,7 +261,7 @@ public class ProgramBuiltin {
                 }
 
 
-                return new BooleanLiteral(
+                return new BooleanLiteralToken(
                         literal_one.getValue().equals(literal_two.getValue())
                 );
             }
@@ -273,7 +273,7 @@ public class ProgramBuiltin {
                 var token_one = tokens.get(0);
                 var token_two = tokens.get(1);
 
-                if ((token_one.getLiteralType() == Literal.LiteralType.STRING) && (token_two.getLiteralType() == Literal.LiteralType.STRING)) {
+                if ((token_one.getLiteralType() == LiteralToken.LiteralType.STRING) && (token_two.getLiteralType() == LiteralToken.LiteralType.STRING)) {
                     // throw a syntax error 
                     throw new SyntaxException("nonequal expects a number or a boolean parameters ");
                 }
@@ -282,7 +282,7 @@ public class ProgramBuiltin {
                     throw new SyntaxException("nonequal expects the same type of parameters");
                 }
 
-                return new BooleanLiteral(
+                return new BooleanLiteralToken(
                         !token_one.getValue().equals(token_two.getValue())
                 );
             }
@@ -294,9 +294,9 @@ public class ProgramBuiltin {
                 var token_one = tokens.get(0);
                 var token_two = tokens.get(1);
                 if (token_one.isLiteral() && token_two.isLiteral()) {
-                    var literal_one = new NumberLiteral((Literal) token_one);
-                    var literal_two = new NumberLiteral((Literal) token_two);
-                    if ((literal_one.getLiteralType() == Literal.LiteralType.STRING) && (literal_two.getLiteralType() == Literal.LiteralType.STRING)) {
+                    var literal_one = new NumberLiteral((LiteralToken) token_one);
+                    var literal_two = new NumberLiteral((LiteralToken) token_two);
+                    if ((literal_one.getLiteralType() == LiteralToken.LiteralType.STRING) && (literal_two.getLiteralType() == LiteralToken.LiteralType.STRING)) {
                         // throw a syntax error
                         throw new SyntaxException("less expects a number or a boolean parameters ");
                     }
@@ -304,7 +304,7 @@ public class ProgramBuiltin {
                         // throw a syntax error
                         throw new SyntaxException("less expects the same type of parameters");
                     }
-                    return new BooleanLiteral(
+                    return new BooleanLiteralToken(
                             literal_one.getValue() < literal_two.getValue()
                     );
 
@@ -323,9 +323,9 @@ public class ProgramBuiltin {
                 var token_one = tokens.get(0);
                 var token_two = tokens.get(1);
                 if (token_one.isLiteral() && token_two.isLiteral()) {
-                    var literal_one = new NumberLiteral((Literal) token_one);
-                    var literal_two = new NumberLiteral((Literal) token_two);
-                    if ((literal_one.getLiteralType() == Literal.LiteralType.STRING) && (literal_two.getLiteralType() == Literal.LiteralType.STRING)) {
+                    var literal_one = new NumberLiteral((LiteralToken) token_one);
+                    var literal_two = new NumberLiteral((LiteralToken) token_two);
+                    if ((literal_one.getLiteralType() == LiteralToken.LiteralType.STRING) && (literal_two.getLiteralType() == LiteralToken.LiteralType.STRING)) {
                         // throw a syntax error
                         throw new SyntaxException("lesseq expects a number or a boolean parameters ");
                     }
@@ -333,7 +333,7 @@ public class ProgramBuiltin {
                         // throw a syntax error
                         throw new SyntaxException("lesseq expects the same type of parameters");
                     }
-                    return new BooleanLiteral(
+                    return new BooleanLiteralToken(
                             literal_one.getValue() <= literal_two.getValue()
                     );
 
@@ -351,9 +351,9 @@ public class ProgramBuiltin {
                 var token_one = tokens.get(0);
                 var token_two = tokens.get(1);
                 if (token_one.isLiteral() && token_two.isLiteral()) {
-                    var literal_one = new NumberLiteral((Literal) token_one);
-                    var literal_two = new NumberLiteral((Literal) token_two);
-                    if ((literal_one.getLiteralType() == Literal.LiteralType.STRING) && (literal_two.getLiteralType() == Literal.LiteralType.STRING)) {
+                    var literal_one = new NumberLiteral((LiteralToken) token_one);
+                    var literal_two = new NumberLiteral((LiteralToken) token_two);
+                    if ((literal_one.getLiteralType() == LiteralToken.LiteralType.STRING) && (literal_two.getLiteralType() == LiteralToken.LiteralType.STRING)) {
                         // throw a syntax error
                         throw new SyntaxException("greater expects a number or a boolean parameters ");
                     }
@@ -361,7 +361,7 @@ public class ProgramBuiltin {
                         // throw a syntax error
                         throw new SyntaxException("greater expects the same type of parameters");
                     }
-                    return new BooleanLiteral(
+                    return new BooleanLiteralToken(
                             literal_one.getValue() > literal_two.getValue()
                     );
 
@@ -378,9 +378,9 @@ public class ProgramBuiltin {
                 var token_one = tokens.get(0);
                 var token_two = tokens.get(1);
                 if (token_one.isLiteral() && token_two.isLiteral()) {
-                    var literal_one = new NumberLiteral((Literal) token_one);
-                    var literal_two = new NumberLiteral((Literal) token_two);
-                    if ((literal_one.getLiteralType() == Literal.LiteralType.STRING) && (literal_two.getLiteralType() == Literal.LiteralType.STRING)) {
+                    var literal_one = new NumberLiteral((LiteralToken) token_one);
+                    var literal_two = new NumberLiteral((LiteralToken) token_two);
+                    if ((literal_one.getLiteralType() == LiteralToken.LiteralType.STRING) && (literal_two.getLiteralType() == LiteralToken.LiteralType.STRING)) {
                         // throw a syntax error
                         throw new SyntaxException("greatereq expects a number or a boolean parameters ");
                     }
@@ -388,7 +388,7 @@ public class ProgramBuiltin {
                         // throw a syntax error
                         throw new SyntaxException("greatereq expects the same type of parameters");
                     }
-                    return new BooleanLiteral(
+                    return new BooleanLiteralToken(
                             literal_one.getValue() >= literal_two.getValue()
                     );
 
@@ -406,12 +406,12 @@ public class ProgramBuiltin {
                 var token_two = tokens.get(1);
 
                 // Checks if both literals are boolean literals
-                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_two.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                if (token_one.getLiteralType() != LiteralToken.LiteralType.BOOLEAN || token_two.getLiteralType() != LiteralToken.LiteralType.BOOLEAN) {
                     // throw a syntax error 
                     throw new SyntaxException("and expects a boolean parameters");
                 }
-                return new BooleanLiteral(
-                        ((BooleanLiteral) token_one).getValue() && ((BooleanLiteral) token_two).getValue()
+                return new BooleanLiteralToken(
+                        ((BooleanLiteralToken) token_one).getValue() && ((BooleanLiteralToken) token_two).getValue()
                 );
 
             }
@@ -424,12 +424,12 @@ public class ProgramBuiltin {
                 var token_two = tokens.get(1);
 
                 // Checks if both literals are boolean literals
-                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_two.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                if (token_one.getLiteralType() != LiteralToken.LiteralType.BOOLEAN || token_two.getLiteralType() != LiteralToken.LiteralType.BOOLEAN) {
                     // throw a syntax error 
                     throw new SyntaxException("or expects a boolean parameters");
                 }
-                return new BooleanLiteral(
-                        ((BooleanLiteral) token_one).getValue() || ((BooleanLiteral) token_two).getValue()
+                return new BooleanLiteralToken(
+                        ((BooleanLiteralToken) token_one).getValue() || ((BooleanLiteralToken) token_two).getValue()
                 );
             }
             case "xor": {
@@ -438,12 +438,12 @@ public class ProgramBuiltin {
                 var token_two = tokens.get(1);
 
                 // Checks if both literals are boolean literals
-                if (token_one.getLiteralType() != Literal.LiteralType.BOOLEAN || token_two.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                if (token_one.getLiteralType() != LiteralToken.LiteralType.BOOLEAN || token_two.getLiteralType() != LiteralToken.LiteralType.BOOLEAN) {
                     // throw a syntax error 
                     throw new SyntaxException("xor expects a boolean parameters");
                 }
-                return new BooleanLiteral(
-                        ((BooleanLiteral) token_one).getValue() ^ ((BooleanLiteral) token_two).getValue()
+                return new BooleanLiteralToken(
+                        ((BooleanLiteralToken) token_one).getValue() ^ ((BooleanLiteralToken) token_two).getValue()
                 );
             }
             case "not": {
@@ -452,12 +452,12 @@ public class ProgramBuiltin {
                     throw new SyntaxException("not expects one argument, got " + tokens.size());
                 }
                 var token = tokens.get(0);
-                if (token.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                if (token.getLiteralType() != LiteralToken.LiteralType.BOOLEAN) {
                     // throw a syntax error 
                     throw new SyntaxException("not expects a boolean parameter");
                 }
-                return new BooleanLiteral(
-                        !((BooleanLiteral) token).getValue()
+                return new BooleanLiteralToken(
+                        !((BooleanLiteralToken) token).getValue()
                 );
 
             }
@@ -471,22 +471,22 @@ public class ProgramBuiltin {
                     var expr1 = elements.children.get(2);
                     var expr2 = elements.children.get(3);
 
-                    if (condition.isLiteral() && condition.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                    if (condition.isLiteral() && condition.getLiteralType() != LiteralToken.LiteralType.BOOLEAN) {
                         throw new SyntaxException("cond expects a bool expression");
                     }
 
-                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return evaluateElement(expr1, state);
+                    if (condition.isLiteral() && ((BooleanLiteralToken) condition).getValue()) return evaluateElement(expr1, state);
                     else return evaluateElement(expr2, state);
                 }
                 else{
                     var condition = evaluateElement(elements.children.get(1), state);
                     var expr1 = elements.children.get(2);
 
-                    if (condition.isLiteral() && condition.getLiteralType() != Literal.LiteralType.BOOLEAN) {
+                    if (condition.isLiteral() && condition.getLiteralType() != LiteralToken.LiteralType.BOOLEAN) {
                         throw new SyntaxException("cond expects a bool expression");
                     }
 
-                    if (condition.isLiteral() && ((BooleanLiteral) condition).getValue()) return evaluateElement(expr1, state);
+                    if (condition.isLiteral() && ((BooleanLiteralToken) condition).getValue()) return evaluateElement(expr1, state);
                     else return new UnitLiteral();
                 }
 

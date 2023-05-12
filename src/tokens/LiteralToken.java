@@ -1,6 +1,6 @@
 package tokens;
 
-public abstract class Literal extends Token {
+public abstract class LiteralToken extends Token {
 
     public static enum LiteralType {
         STRING,
@@ -14,11 +14,11 @@ public abstract class Literal extends Token {
 
     protected String literal;
 
-    Literal(String literalValue) {
+    LiteralToken(String literalValue) {
         this.literal = literalValue;
     }
 
-    Literal() {}
+    LiteralToken() {}
 
     @Override
     public boolean isLiteral() {

@@ -1,12 +1,12 @@
 package tokens;
 
-import static tokens.Literal.LiteralType.RETURN;
+import static tokens.LiteralToken.LiteralType.RETURN;
 
-public class ReturnLiteral extends tokens.Literal{
+public class ReturnLiteral extends LiteralToken {
 
-    public Literal value;
+    public LiteralToken value;
 
-    public ReturnLiteral(Literal value) {
+    public ReturnLiteral(LiteralToken value) {
         this.value = value;
     }
 
@@ -16,7 +16,7 @@ public class ReturnLiteral extends tokens.Literal{
     }
 
     @Override
-    public Literal getValue() {
+    public LiteralToken getValue() {
         return value;
     }
 }
