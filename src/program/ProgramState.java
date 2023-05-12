@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import syntax.LISPParser;
-import tokens.Identifier;
+import tokens.IdentifierToken;
 import tokens.LiteralToken;
 
 public class ProgramState {
@@ -27,20 +27,20 @@ public class ProgramState {
     // A storage of all the variables
     // and their values
     static class Variable {
-        Identifier identifier;
+        IdentifierToken identifier;
         LiteralToken value;
 
-        Variable(Identifier identifier, LiteralToken value) {
+        Variable(IdentifierToken identifier, LiteralToken value) {
             this.identifier = identifier;
             this.value = value;
         }
     }
 
     static class Function {
-        List<Identifier> arguments;
+        List<IdentifierToken> arguments;
         LISPParser.TreeNode elements;
 
-        Function(List<Identifier> arguments, LISPParser.TreeNode elements) {
+        Function(List<IdentifierToken> arguments, LISPParser.TreeNode elements) {
             this.arguments = arguments;
             this.elements = elements;
         }
@@ -51,12 +51,12 @@ public class ProgramState {
     HashMap<String, LiteralToken> variables = new HashMap<>();
 
     // Checks if a variable is defined
-    boolean isDefined(Identifier identifier) {
+    boolean isDefined(IdentifierToken identifier) {
         return variables.containsKey(identifier);
     }
 
     // Gets the value of a variable
-    LiteralToken getValue(Identifier identifier) {
+    LiteralToken getValue(IdentifierToken identifier) {
         for (var variable : variables) {
             if (variable.identifier.getValue().equals(identifier.getValue())) {
                 return variable.value;
@@ -66,7 +66,7 @@ public class ProgramState {
     }
 
     // Sets the value of a variable
-    void setValue(Identifier identifier, LiteralToken value) {
+    void setValue(IdentifierToken identifier, LiteralToken value) {
         for (var variable : variables) {
             if (variable.identifier.getValue().equals(identifier.getValue())) {
                 variable.value = value;
@@ -76,15 +76,15 @@ public class ProgramState {
         variables.add(new Variable(identifier, value));
     }
 
-    boolean isFunctionDefined(Identifier identifier) {
+    boolean isFunctionDefined(IdentifierToken identifier) {
         return functions.containsKey(identifier.getValue());
     }
 
-    Function getFunction(Identifier identifier) {
+    Function getFunction(IdentifierToken identifier) {
         return functions.get(identifier.getValue());
     }
 
-    void setFunction(Identifier identifier, List<Identifier> arguments, LISPParser.TreeNode node) {
+    void setFunction(IdentifierToken identifier, List<IdentifierToken> arguments, LISPParser.TreeNode node) {
         functions.put(identifier.getValue(), new Function(identifier, arguments, node));
     }
 

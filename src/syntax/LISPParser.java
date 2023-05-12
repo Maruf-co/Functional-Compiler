@@ -979,7 +979,7 @@ public static class LISPLexer implements LISPParser.Lexer {
   public int yylex () throws IOException{
     Token token = yylex.yylex();
     LISPParser.yylval = token;
-    if (token instanceof Identifier) {
+    if (token instanceof IdentifierToken) {
         return LISPParser.Lexer.Identifier;
     } else if (token instanceof LeftBracket) {
         return LISPParser.Lexer.LeftBracket;

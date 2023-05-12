@@ -1,9 +1,9 @@
 package tokens;
 
-public class Identifier extends Token {
+public class IdentifierToken extends Token {
     public String identifier;
 
-    public Identifier(String rawString) {
+    public IdentifierToken(String rawString) {
         super(rawString);
         this.identifier = rawString;
     }

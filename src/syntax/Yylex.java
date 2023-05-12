@@ -590,7 +590,7 @@ public final class Yylex {
             // fall through
           case 17: break;
           case 3: 
-            { return capture(new Identifier(yytext()));
+            { return capture(new IdentifierToken(yytext()));
             } 
             // fall through
           case 18: break;

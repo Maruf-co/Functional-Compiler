@@ -5,6 +5,8 @@ import tokens.LiteralToken
 
 abstract class Element() {
     abstract fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>? = null): Element
+
+    abstract fun print(): String
 }
 
 class List(val elements: ArrayList<Element>) : Element() {
@@ -25,6 +27,10 @@ class List(val elements: ArrayList<Element>) : Element() {
         }
         throw SyntaxException("Can't apply such type")
     }
+
+    override fun print(): String {
+        return "List"
+    }
 }
 
 class Identifier(val name: String) : Element() {
@@ -34,11 +40,19 @@ class Identifier(val name: String) : Element() {
         }
         return this
     }
+
+    override fun print(): String {
+        return "Identifier"
+    }
 }
 
 class Literal(val value: LiteralToken): Element() {
     override fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>?): Element {
         return this
+    }
+
+    override fun print(): String {
+        return value.value.toString()
     }
 
 }
@@ -58,11 +72,20 @@ class Function(private val arguments: ArrayList<Identifier>, private val body: E
         return body.evaluate(state, input)
     }
 
+    override fun print(): String {
+       if (name != null) return name
+        return "Print"
+    }
+
 }
 
 class Unit(): Element() {
     override fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>?): Element {
         return this;
+    }
+
+    override fun print(): String {
+        return "Unit"
     }
 
 }

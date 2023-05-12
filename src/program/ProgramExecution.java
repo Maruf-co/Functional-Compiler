@@ -7,7 +7,7 @@ import tokens.*;
 
 public class ProgramExecution {
 
-    static LiteralToken evaluateIdentifier(Identifier identifier, ProgramState state) throws SyntaxException {
+    static LiteralToken evaluateIdentifier(IdentifierToken identifier, ProgramState state) throws SyntaxException {
         if (state.isDefined(identifier)) {
             return state.getValue(identifier);
         } else {
@@ -20,7 +20,7 @@ public class ProgramExecution {
         if (element.isTerminal()) {
             var token = element.data;
             if (token.isIdentifier()) {
-                return evaluateIdentifier((Identifier) token, state);
+                return evaluateIdentifier((IdentifierToken) token, state);
             } else {
                 return (LiteralToken) token;
             }
@@ -44,12 +44,12 @@ public class ProgramExecution {
         if (firstElement.isTerminal()) {
             var token = firstElement.data;
             if (token.isIdentifier()) {
-                var identifierToken = (Identifier) token;
+                var identifierToken = (IdentifierToken) token;
                 if (ProgramBuiltin.isBuiltIn(identifierToken)) {
                     return ProgramBuiltin.executeBuiltin(identifierToken, elements, state);
                 } else if (ProgramBuiltin.isListOperation(identifierToken)) {
                     return ProgramBuiltin.executeListOperations(identifierToken, elements, state);
-                } else if (ProgramBuiltin.isLoop((Identifier) token)) {
+                } else if (ProgramBuiltin.isLoop((IdentifierToken) token)) {
                     return ProgramBuiltin.executeLoop(elements, state);
                 } else if (ProgramDeclaration.isDeclaration(identifierToken)) {
                     return ProgramDeclaration.executeUtility(identifierToken, elements, state);

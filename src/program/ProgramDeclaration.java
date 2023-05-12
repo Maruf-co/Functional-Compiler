@@ -3,7 +3,7 @@ package program;
 import java.util.ArrayList;
 
 import syntax.LISPParser.TreeNode;
-import tokens.Identifier;
+import tokens.IdentifierToken;
 import tokens.LiteralToken;
 import tokens.UnitLiteral;
 
@@ -17,7 +17,7 @@ public class ProgramDeclaration {
 
     // Checks if it is utility 
     // function
-    public static boolean isDeclaration(Identifier identifier) {
+    public static boolean isDeclaration(IdentifierToken identifier) {
         for (var utility : ProgramDeclaration.declarations) {
             if (utility.equals(identifier.getValue())) {
                 return true;
@@ -28,7 +28,7 @@ public class ProgramDeclaration {
     public static LiteralToken setq(TreeNode node, ProgramState state) throws SyntaxException {
         LiteralToken variableValue = evaluateElement(node.children.get(2), state);
         if (node.children.get(1).isTerminal()) {
-            Identifier variableName = (Identifier) node.children.get(1).data;
+            IdentifierToken variableName = (IdentifierToken) node.children.get(1).data;
             state.setValue(variableName, variableValue);
             return variableValue;
         } else {
@@ -37,17 +37,17 @@ public class ProgramDeclaration {
     }
 
     public static LiteralToken func(TreeNode node, ProgramState state) throws SyntaxException {
-        var arguments = new ArrayList<Identifier>();
+        var arguments = new ArrayList<IdentifierToken>();
         for (var argument : node.children.get(2).children) {
             if (!argument.isTerminal()) {
                 throw new SyntaxException("Function arguments must be identifiers");
             }
-            Identifier arg = (Identifier) argument.data;
+            IdentifierToken arg = (IdentifierToken) argument.data;
             arguments.add(arg);
         }
 
         if (node.children.get(1).isTerminal()) {
-            Identifier variableName = (Identifier) node.children.get(1).data;
+            IdentifierToken variableName = (IdentifierToken) node.children.get(1).data;
             state.setFunction(variableName, arguments, node.children.get(3));
             return new UnitLiteral();
         } else {
@@ -55,7 +55,7 @@ public class ProgramDeclaration {
         }
     }
 
-    public static LiteralToken executeFunction(Identifier identifier, TreeNode node, ProgramState state) throws SyntaxException {
+    public static LiteralToken executeFunction(IdentifierToken identifier, TreeNode node, ProgramState state) throws SyntaxException {
         ProgramState.Function function = state.getFunction(identifier);
 
         var values = new ArrayList<LiteralToken>();
@@ -76,7 +76,7 @@ public class ProgramDeclaration {
     }
 
     // Executes the utility function
-    public static LiteralToken executeUtility(Identifier utility, TreeNode node, ProgramState state) throws SyntaxException {
+    public static LiteralToken executeUtility(IdentifierToken utility, TreeNode node, ProgramState state) throws SyntaxException {
         switch (utility.getValue()) {
             case "setq": {
                 return setq(node, state);

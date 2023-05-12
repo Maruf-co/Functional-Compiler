@@ -40,7 +40,7 @@ public class ProgramBuiltin {
 
     static String[] loops = {"while"};
 
-    static boolean isBuiltIn(Identifier identifier) {
+    static boolean isBuiltIn(IdentifierToken identifier) {
         for (var builtin : ProgramBuiltin.builtins) {
             if (builtin.equals(identifier.getValue())) {
                 return true;
@@ -50,7 +50,7 @@ public class ProgramBuiltin {
 
     }
 
-    static boolean isListOperation(Identifier identifier) {
+    static boolean isListOperation(IdentifierToken identifier) {
         for (var builtin : ProgramBuiltin.listOperations) {
             if (builtin.equals(identifier.getValue())) {
                 return true;
@@ -60,7 +60,7 @@ public class ProgramBuiltin {
 
     }
 
-    static boolean isLoop(Identifier identifier) {
+    static boolean isLoop(IdentifierToken identifier) {
         for (var builtin : ProgramBuiltin.loops) {
             if (builtin.equals(identifier.getValue())) {
                 return true;
@@ -96,7 +96,7 @@ public class ProgramBuiltin {
         return new NumberLiteral(0.0);
     }
 
-    static LiteralToken executeListOperations(Identifier identifierToken, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
+    static LiteralToken executeListOperations(IdentifierToken identifierToken, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
         switch (identifierToken.getValue()) {
             case "head": {
                 if (elements.children.size() != 2)
@@ -105,7 +105,7 @@ public class ProgramBuiltin {
 
                 if (list.isTerminal()) throw new SyntaxException("head expected list, got terminal");
 
-                if (list.children.get(0).isTerminal() && list.children.get(0).data.isIdentifier() && (ProgramBuiltin.isBuiltIn((Identifier) list.children.get(0).data) || ProgramBuiltin.isLoop((Identifier) list.children.get(0).data) || ProgramBuiltin.isListOperation((Identifier) list.children.get(0).data) || ProgramDeclaration.isDeclaration((Identifier) list.children.get(0).data)))
+                if (list.children.get(0).isTerminal() && list.children.get(0).data.isIdentifier() && (ProgramBuiltin.isBuiltIn((IdentifierToken) list.children.get(0).data) || ProgramBuiltin.isLoop((IdentifierToken) list.children.get(0).data) || ProgramBuiltin.isListOperation((IdentifierToken) list.children.get(0).data) || ProgramDeclaration.isDeclaration((IdentifierToken) list.children.get(0).data)))
                     throw new SyntaxException("head expected sample list without buildin functions");
 
 
@@ -141,7 +141,7 @@ public class ProgramBuiltin {
         return values;
     }
 
-    static LiteralToken executeBuiltin(Identifier builtin, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
+    static LiteralToken executeBuiltin(IdentifierToken builtin, LISPParser.TreeNode elements, ProgramState state) throws SyntaxException {
         switch (builtin.getValue()) {
             case "plus": {
                 var tokens = evaluateAllElements(elements, state);
