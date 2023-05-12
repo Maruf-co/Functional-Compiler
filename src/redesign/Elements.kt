@@ -43,19 +43,26 @@ class Literal(val value: LiteralToken): Element() {
 
 }
 
-class Function(val arguments: List, val body: Element, private val name: String?): Element() {
+class Function(private val arguments: ArrayList<Identifier>, private val body: Element, private val name: String?): Element() {
     override fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>?): Element {
-        if (arguments.elements.size != input!!.size) {
+        if (arguments.size != input!!.size) {
             throw SyntaxException(if (name != null)
-                "$name function accepts ${arguments.elements.size} arguments, given: ${input.size}"
-            else "Function accepts ${arguments.elements.size} arguments, given: ${input.size}" )
+                "$name function accepts ${arguments.size} arguments, given: ${input.size}"
+            else "Function accepts ${arguments.size} arguments, given: ${input.size}" )
         }
         val localState = ProgramState(HashMap(state.variables))
-        for (i in 0..arguments.elements.size) {
-            val argument = arguments.elements[i] as Identifier
+        for (i in 0..arguments.size) {
+            val argument = arguments[i]
             localState.variables[argument.name] = input[i]
         }
         return body.evaluate(state, input)
+    }
+
+}
+
+class Unit(): Element() {
+    override fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>?): Element {
+        return this;
     }
 
 }
