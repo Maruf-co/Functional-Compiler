@@ -2,14 +2,7 @@ package tokens;
 
 public class RightBracket extends Token {
     @Override
-    public String getName() {
+    public String toString() {
         return "RBRK";
-    }
-
-    public RightBracket() {
-    }
-
-    public RightBracket(String rawString) {
-        super(rawString);
     }
 }

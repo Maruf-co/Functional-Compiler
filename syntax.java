@@ -425,7 +425,7 @@ public class LISPParser
   case 5: /* Elements: Elements Element  */
   if (yyn == 5)
     /* "src/syntax/syntax.y":40  */
-                                                                                     { TreeNode<String> elem = (TreeNode<String>) yystack.valueAt (1); yyval = elem.addChild(yystack.valueAt (0)); };
+                                                                                     { TreeNode) yystack.valueAt (1); yyval = elem.addChild(yystack.valueAt (0)); };
   break;
 
 
@@ -1076,19 +1076,19 @@ class LISPLexer implements LISPParser.Lexer {
   }
 }
 
-class TreeNode<T>{
+class TreeNode{
     // hui
     T data;
-    TreeNode<T> parent;
-    List<TreeNode<T>> children;
+    TreeNode parent;
+    List<TreeNode children;
 
     public TreeNode(T data) {
         this.data = data;
-        this.children = new LinkedList<TreeNode<T>>();
+        this.children = new LinkedList<TreeNode();
     }
 
-    public TreeNode<T> addChild(Object obj) {
-        var childNode = (TreeNode<T>) obj;
+    public TreeNode addChild(Object obj) {
+        var childNode = (TreeNode) obj;
         childNode.parent = this;
         this.children.add(childNode);
         return this;

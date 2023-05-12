@@ -42,12 +42,13 @@ Identifier = [a-zA-Z\_$][a-zA-Z0-9\_$]*   // Variable/predefined function
     ")"                                                 { return capture(new RightBracket()); }
     ({Whitespace}|{Borders})\"                          { stringLiteralBuffer.setLength(0); yybegin(STRING); }
     {Whitespace}                                        { /* Skip */ }
-    {Number}|{Boolean}                                  { return capture(new Literal(yytext())); }
+    {Number}                                            { return capture(new NumberLiteral(yytext())); }
+    {Boolean}                                           { return capture(new BooleanLiteral(yytext())); }
     {Identifier}                                        { return capture(new Identifier(yytext())); }
 }
 
 <STRING> {
-    \"                  { yybegin(YYINITIAL); return capture(new Literal(stringLiteralBuffer.toString())); }
+    \"                  { yybegin(YYINITIAL); return capture(new StringLiteral(stringLiteralBuffer.toString())); }
     \\t                 { stringLiteralBuffer.append('\t'); }
     \\n                 { stringLiteralBuffer.append('\n'); }
     \\r                 { stringLiteralBuffer.append('\r'); }

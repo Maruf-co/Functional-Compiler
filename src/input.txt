@@ -1,5 +1,17 @@
-eval 10
-
-
-
-
+(func makeList (A) (A))
+(func sqrt (n) (
+  (setq x 1)
+  (setq nx (divide (plus x (divide n x)) 2))
+  (while true
+    (
+  (setq nx (divide (plus x (divide n x)) 2))
+  (cond (and
+        (less (minus x nx) 0.0005)
+        (greater (minus x nx) -0.0005))
+    (break)
+    (setq x nx)
+    )
+   ))
+  (return x)
+))
+(sqrt 2)

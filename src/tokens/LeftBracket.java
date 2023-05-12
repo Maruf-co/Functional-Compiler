@@ -1,16 +1,13 @@
 package tokens;
 
 public class LeftBracket extends Token {
-    
-    public LeftBracket() {
-    }
-
-    public LeftBracket(String rawString) {
-        super(rawString);
+    @Override
+    public String toString() {
+        return "LBRK";
     }
 
     @Override
-    public String getName() {
+    public Object getValue() {
         return "LBRK";
     }
 }
