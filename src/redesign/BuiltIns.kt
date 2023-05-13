@@ -36,8 +36,8 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             }
 
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is NumberLiteral }
-            if (isInvalid) {
+            val isValid = tokens.all { it is Literal && it.value is NumberLiteral }
+            if (!isValid) {
                 throw SyntaxException("plus requires all arguments to be numbers")
             }
 
@@ -51,8 +51,8 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             }
 
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is NumberLiteral }
-            if (isInvalid) {
+            val isValid = tokens.all { it is Literal && it.value is NumberLiteral }
+            if (!isValid) {
                 throw SyntaxException("minus requires all arguments to be numbers")
             }
 
@@ -66,8 +66,8 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             }
 
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is NumberLiteral }
-            if (isInvalid) {
+            val isValid = tokens.all { it is Literal && it.value is NumberLiteral }
+            if (!isValid) {
                 throw SyntaxException("times requires all arguments to be numbers")
             }
 
@@ -81,8 +81,8 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             }
 
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is NumberLiteral }
-            if (isInvalid) {
+            val isValid = tokens.all { it is Literal && it.value is NumberLiteral }
+            if (!isValid) {
                 throw SyntaxException("divide requires all arguments to be numbers")
             }
 
@@ -96,8 +96,8 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             }
 
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is BooleanLiteralToken }
-            if (isInvalid) {
+            val isValid = tokens.all { it is Literal && it.value is BooleanLiteralToken }
+            if (!isValid) {
                 throw SyntaxException("and requires all arguments to be bools")
             }
 
@@ -111,8 +111,8 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             }
 
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is BooleanLiteralToken }
-            if (isInvalid) {
+            val isValid = tokens.all { it is Literal && it.value is BooleanLiteralToken }
+            if (!isValid) {
                 throw SyntaxException("or requires all arguments to be bools")
             }
 
@@ -126,8 +126,8 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             }
 
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is BooleanLiteralToken }
-            if (isInvalid) {
+            val isValid = tokens.all { it is Literal && it.value is BooleanLiteralToken }
+            if (!isValid) {
                 throw SyntaxException("xor requires all arguments to be bools")
             }
 
@@ -141,8 +141,8 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             }
 
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is BooleanLiteralToken }
-            if (isInvalid) {
+            val isValid = tokens.all { it is Literal && it.value is BooleanLiteralToken }
+            if (!isValid) {
                 throw SyntaxException("not requires argument to be bool")
             }
 
@@ -155,9 +155,9 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
                 throw SyntaxException("equal requires two arguments, provided ${elements.size}")
             }
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && (it.value is NumberLiteral || it.value is BooleanLiteralToken)}
+            val isValid = tokens.all { it is Literal && (it.value is NumberLiteral || it.value is BooleanLiteralToken)}
 
-            if (isInvalid) {
+            if (!isValid) {
                 throw SyntaxException("equal requires argument to be bool or number")
             }
 
@@ -177,9 +177,9 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
                 throw SyntaxException("nonequal requires two arguments, provided ${elements.size}")
             }
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && (it.value is NumberLiteral || it.value is BooleanLiteralToken)}
+            val isValid = tokens.all { it is Literal && (it.value is NumberLiteral || it.value is BooleanLiteralToken)}
 
-            if (isInvalid) {
+            if (!isValid) {
                 throw SyntaxException("nonequal requires argument to be bool or number")
             }
 
@@ -199,9 +199,9 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
                 throw SyntaxException("less requires two arguments, provided ${elements.size}")
             }
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is NumberLiteral}
+            val isValid = tokens.all { it is Literal && it.value is NumberLiteral}
 
-            if (isInvalid) {
+            if (!isValid) {
                 throw SyntaxException("less requires argument to be a number")
             }
 
@@ -215,9 +215,9 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
                 throw SyntaxException("lesseq requires two arguments, provided ${elements.size}")
             }
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is NumberLiteral}
+            val isValid = tokens.all { it is Literal && it.value is NumberLiteral}
 
-            if (isInvalid) {
+            if (!isValid) {
                 throw SyntaxException("lesseq requires argument to be a number")
             }
 
@@ -231,9 +231,9 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
                 throw SyntaxException("greater requires two arguments, provided ${elements.size}")
             }
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is NumberLiteral}
+            val isValid = tokens.all { it is Literal && it.value is NumberLiteral}
 
-            if (isInvalid) {
+            if (!isValid) {
                 throw SyntaxException("greater requires argument to be a number")
             }
 
@@ -247,9 +247,9 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
                 throw SyntaxException("greatereq requires two arguments, provided ${elements.size}")
             }
             val tokens = elements.map { it.evaluate(state) }
-            val isInvalid = tokens.all { it is Literal && it.value is NumberLiteral}
+            val isValid = tokens.all { it is Literal && it.value is NumberLiteral}
 
-            if (isInvalid) {
+            if (!isValid) {
                 throw SyntaxException("greatereq requires argument to be a number")
             }
 

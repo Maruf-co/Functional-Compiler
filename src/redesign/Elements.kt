@@ -2,6 +2,12 @@ package redesign
 
 import program.SyntaxException
 import tokens.LiteralToken
+import kotlin.collections.List
+
+
+fun isKeyword(name: String): Boolean {
+    return isBuiltIn(name) || isSpecialForm(name)
+}
 
 abstract class Element() {
     abstract fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>? = null): Element
@@ -35,10 +41,13 @@ class List(val elements: ArrayList<Element>) : Element() {
 
 class Identifier(val name: String) : Element() {
     override fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>?): Element {
-        if (state.variables.containsKey(name)) {
+        if (isKeyword(name)) {
+            return this
+        }
+        if (!isKeyword(name) && state.variables.containsKey(name)) {
             return state.variables[name]!!
         }
-        return this
+        throw SyntaxException("Variable $name undefined")
     }
 
     override fun print(): String {
@@ -57,7 +66,7 @@ class Literal(val value: LiteralToken): Element() {
 
 }
 
-class Function(private val arguments: ArrayList<Identifier>, private val body: Element, private val name: String?): Element() {
+class Function(private val arguments: ArrayList<Identifier>, private val body: Element, private val name: String? = null): Element() {
     override fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>?): Element {
         if (arguments.size != input!!.size) {
             throw SyntaxException(if (name != null)
@@ -65,11 +74,8 @@ class Function(private val arguments: ArrayList<Identifier>, private val body: E
             else "Function accepts ${arguments.size} arguments, given: ${input.size}" )
         }
         val localState = ProgramState(HashMap(state.variables))
-        for (i in 0..arguments.size) {
-            val argument = arguments[i]
-            localState.variables[argument.name] = input[i]
-        }
-        return body.evaluate(state, input)
+        addArgumentsToState(arguments, input, localState)
+        return body.evaluate(localState, input)
     }
 
     override fun print(): String {
@@ -86,6 +92,27 @@ class Unit(): Element() {
 
     override fun print(): String {
         return "Unit"
+    }
+
+}
+
+class ReturnElement(val value: Element) : Element() {
+    override fun evaluate(state: ProgramState, input: List<Element>?): Element {
+        return this
+    }
+
+    override fun print(): String {
+        return "Should not be printed"
+    }
+}
+
+class NullElement: Element() {
+    override fun evaluate(state: ProgramState, input: List<Element>?): Element {
+        return this
+    }
+
+    override fun print(): String {
+        return "null"
     }
 
 }
