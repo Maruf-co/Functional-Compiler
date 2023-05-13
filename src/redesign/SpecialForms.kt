@@ -68,4 +68,5 @@ fun evaluateSpecialForm(element: Element, state: ProgramState): Element {
             }
         }
     }
+    throw SyntaxException("Not a special form")
 }

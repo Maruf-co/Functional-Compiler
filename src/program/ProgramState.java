@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.sun.source.tree.Tree;
 import syntax.LISPParser;
 import tokens.IdentifierToken;
 import tokens.LiteralToken;
@@ -37,10 +39,12 @@ public class ProgramState {
     }
 
     static class Function {
+        IdentifierToken identifier;
         List<IdentifierToken> arguments;
         LISPParser.TreeNode elements;
 
-        Function(List<IdentifierToken> arguments, LISPParser.TreeNode elements) {
+        Function(IdentifierToken identifier, List<IdentifierToken> arguments, LISPParser.TreeNode elements) {
+            this.identifier = identifier;
             this.arguments = arguments;
             this.elements = elements;
         }
@@ -48,11 +52,18 @@ public class ProgramState {
 
     // Map of all the variables
     // and their values
-    HashMap<String, LiteralToken> variables = new HashMap<>();
+    ArrayList<Variable> variables = new ArrayList<>();
+
+    HashMap<String, Function> functions = new HashMap<>();
 
     // Checks if a variable is defined
     boolean isDefined(IdentifierToken identifier) {
-        return variables.containsKey(identifier);
+        for (var variable : variables) {
+            if (variable.identifier.getValue().equals(identifier.getValue())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Gets the value of a variable

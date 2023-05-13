@@ -29,4 +29,5 @@ fun evaluateBuiltId(identifier: Identifier, elements: ArrayList<Element>, state:
             return Literal(NumberLiteral(first + second))
         }
     }
+    throw SyntaxException("${identifier.name} is not a built-in function")
 }

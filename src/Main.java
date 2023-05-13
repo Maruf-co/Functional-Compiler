@@ -1,12 +1,11 @@
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayDeque;
-
-import program.ProgramExecution;
-import program.ProgramState;
 import program.SyntaxException;
+import redesign.List;
 import syntax.LISPParser;
+
+import static redesign.ProgramBuilderKt.getProgram;
+import static redesign.ProgramExecutionKt.executeProgram;
 
 public class Main {
     public static void main(String[] args) throws IOException, IllegalStateException, SyntaxException {
@@ -15,10 +14,10 @@ public class Main {
         var parser = new LISPParser(lexer);
         parser.parse();
 
-
-        var result = ProgramExecution.execute(LISPParser.node, new ProgramState());
-        System.out.println(result.getValue());
-        
+        var program = (List) getProgram(LISPParser.node);
+        var result = executeProgram(program);
+        System.out.println(result);
+        /*
         System.out.println(LISPParser.node);
 
         var queue = new ArrayDeque<LISPParser.TreeNode>();
@@ -62,6 +61,6 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        return;
+        return;*/
     }
 }
