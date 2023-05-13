@@ -9,7 +9,7 @@ import static redesign.ProgramExecutionKt.executeProgram;
 
 public class Main {
     public static void main(String[] args) throws IOException, IllegalStateException, SyntaxException {
-        var reader = new FileReader("/Users/r-shakirova/IdeaProjects/Functional-Compiler/src/input.txt");
+        var reader = new FileReader("/Users/k.tyulebaeva/compiler/Functional-Compiler/src/input.txt");
         var lexer = new LISPParser.LISPLexer(reader);
         var parser = new LISPParser(lexer);
         parser.parse();

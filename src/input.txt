@@ -1,4 +1,5 @@
-(setq plusOne (lambda (a) (plus a 1)))
-(plusOne 2)
+(setq a 0)
+(while (less a 5) ((setq a (plus a 1))))
+a
 
 

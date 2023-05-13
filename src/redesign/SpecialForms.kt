@@ -1,13 +1,19 @@
 package redesign
 
 import program.SyntaxException
+import tokens.BooleanLiteralToken
+import tokens.LiteralToken
+import tokens.LiteralToken.LiteralType
 
 var specialForms = setOf(
     "quote",
     "setq",
     "func",
     "lambda",
-    "prog"
+    "prog",
+    "break",
+    "while",
+    "cond"
 )
 
 fun isSpecialForm(name: String): Boolean {
@@ -103,6 +109,39 @@ fun evaluateSpecialForm(element: Element, state: ProgramState): Element {
                         if (result is ReturnElement) {
                             return result.value
                         }
+                    }
+                    return Unit()
+                }
+                "break" -> {
+                    if(element.elements.size != 1){
+                        throw SyntaxException("Break does not require arguments.")
+                    }
+
+                    return Break()
+                }
+                "while" -> {
+                    if(element.elements.size != 3){
+                        throw SyntaxException("While requires two arguments.")
+                    }
+
+                    if(element.elements[1].evaluate(state) !is Literal){
+                        throw SyntaxException("While requires first argument to be boolean.")
+                    }
+
+                    val condition = element.elements[1].evaluate(state) as Literal
+                    val loopBody = element.elements[2]
+
+
+                    if(condition.value !is BooleanLiteralToken ){
+                        throw SyntaxException("While requires first argument to be boolean.")
+                    }
+                    if(loopBody !is List){
+                        throw SyntaxException("While requires second argument to be list.")
+                    }
+                    while(((element.elements[1].evaluate(state) as Literal).value as BooleanLiteralToken).value){
+                       for(elem in loopBody.elements){
+                           if(elem.evaluate(state) is Break) break
+                       }
                     }
                     return Unit()
                 }

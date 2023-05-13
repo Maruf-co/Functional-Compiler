@@ -87,13 +87,23 @@ class Function(private val arguments: ArrayList<Identifier>, private val body: E
 
 class Unit(): Element() {
     override fun evaluate(state: ProgramState, input: kotlin.collections.List<Element>?): Element {
-        return this;
+        return this
     }
 
     override fun print(): String {
         return "Unit"
     }
 
+}
+
+class Break(): Element() {
+    override fun evaluate(state: ProgramState, input: List<Element>?): Element {
+        return this
+    }
+
+    override fun print(): String {
+        return "Break"
+    }
 }
 
 class ReturnElement(val value: Element) : Element() {
